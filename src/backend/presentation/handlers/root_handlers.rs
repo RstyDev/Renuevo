@@ -67,7 +67,6 @@ fn get_token(
     id: String,
 ) -> String {
     let now = Utc::now();
-
     let secret = match tipo {
         TokenType::Refresh => env.get("REFRESH_SECRET").unwrap(),
         TokenType::Normal => env.get("SECRET").unwrap(),
