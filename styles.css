@@ -1,0 +1,306 @@
+.logo.sycamore:hover {
+  filter: drop-shadow(0 0 2em #f8b94c);
+}
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color: #0f0f0f;
+  background-color: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -ms-overflow-style: none;  /* IE and Edge
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+/*.shadow{*/
+/*  position: fixed;*/
+/*  width: 100dvh;*/
+/*  height: 100dvw;*/
+/*  z-index: 0;*/
+/*}*/
+
+.error_message{
+  color: red;
+  font-weight: 250;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.modal-ministerio, .modal-user {
+  visibility: hidden;
+  /*display: none; !* Hidden by default *!*/
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 60px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0);
+  &.true {
+    visibility: visible;
+    /*display: block;*/
+  }
+}
+
+#main_visita {
+  padding-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  & p {
+    text-align: center;
+  }
+  & button {
+    width: fit-content;
+  }
+}
+
+/* Modal Content */
+
+#main {
+  height: 98dvh;
+  display: flex;
+}
+.form {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#body {
+  overflow-y: auto;
+  margin-bottom: 50px;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: 0.75s;
+}
+
+.logo.tauri:hover {
+  filter: drop-shadow(0 0 2em #24c8db);
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+a {
+  font-weight: 500;
+  color: #111111;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #777777;
+  cursor: pointer;
+}
+
+
+h1, h4 {
+  text-align: center;
+}
+
+
+input, select {
+  border-radius: 5px;
+  margin: 5px;
+  border-bottom: 2px solid #555;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: #0f0f0f;
+  background-color: rgba(0, 0, 0, 0);
+  transition: border-color 0.25s;
+  /* box-shadow: 0 0 2px rgba(0, 0, 0, 0.2); */
+  text-align: center;
+  &[type=submit] {
+    background-image: linear-gradient(#ddd, #fff);
+  }
+}
+
+
+#acts29 {
+  width: 13dvw;
+}
+#ante_su_palabra, #world_reformed_fellowship {
+  width: 15dvw;
+}
+button, a.button {
+  border-radius: 8px;
+
+  border: 1px solid #555;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: #0f0f0f;
+  background-color: #ffffff;
+  transition: border-color 0.25s;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: #396cd8;
+}
+button:active {
+  border-color: #396cd8;
+  background-color: #e8e8e8;
+}
+
+input,
+button, select {
+  outline: none;
+}
+
+#dropdown_ministerio{
+  padding: 0;
+}
+
+header{
+  height: fit-content;
+  background-image: linear-gradient(#f7f7f7, #ffffff);
+  top: 0;
+  position: fixed;
+  width: 100%;
+  left: 0;
+  display: flex;
+
+  & .menu_a{
+    width: 33.333%;
+    padding: 10px 0 15px;
+    background-color: #1f1f1f;
+    color: #fff;
+    &:has(+ .selected){
+      border-top-right-radius: 20px;
+    }
+    &.selected +.menu_a {
+      border-top-left-radius: 20px;
+    }
+    &.selected {
+      border-bottom-right-radius: 20px;
+      border-bottom-left-radius: 20px;
+      background-color: #393939;
+
+    }
+    &:hover{
+      cursor: pointer;
+    }
+  }
+}
+li {
+  list-style-type: none;
+  margin: 0;
+}
+footer {
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+#social_media {
+  display: flex;
+  width: 20%;
+  justify-content: space-between;
+  font-size: 2.2dvw;
+}
+#copyright_section {
+  display: flex;
+  font-size: 1.3dvw;
+  justify-content: space-between;
+  width: 70%;
+}
+#address, #copyright_section, #social_media {
+  margin: 5px;
+}
+
+#menu_options {
+  & li {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+#organizations {
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#user {
+  display: flex;
+  &.out{
+    font-size: 16px;
+    color: #111111;
+    margin: 0;
+    padding: 7px 13px 12px 9px;
+  }
+}
+
+#miembros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.user_card {
+  border: solid 1px #aaa;
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px black;
+  transition: all 0.3s;
+  width: 300px;
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 5px 5px 7px black;
+    transition: all 0.5s;
+  }
+}
+
+.user_card_info_false{
+  /*display: none;*/
+  transform: scaleY(0);
+  transform-origin: top;
+  overflow: hidden;
+  max-height: 0;
+  transition: all 0.3s;
+}
+
+.user_card_info_true{
+  /*display: block;*/
+  transform: scaleY(1);
+  max-height: 150px;
+  transition: all 0.3s;
+  padding-left: 20px;
+}
+
+#select_ancianato {
+  align-self: baseline;
+}

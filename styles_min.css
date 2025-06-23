@@ -1,0 +1,136 @@
+#burger, #user{
+  color: black;
+  display: inline-block;
+  font-size: 28px;
+  margin: 5px 15px;
+}
+header {
+  justify-content: space-between;
+  height: 40px;
+}
+#main_start {
+  display: flex;
+  flex-direction: column;
+}
+.main_img {
+  border-radius: 10px;
+  width: 49%;
+}
+.modal {
+  visibility: hidden;
+  /*display: none; !* Hidden by default *!*/
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 60px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0);
+  &.true {
+    visibility: visible;
+  }
+}
+/* Modal Content */
+.modal-content ul {
+  margin: 0;
+  z-index: 2;
+  background-color: #dddddd;
+  position: relative;
+  padding: 5px;
+  border: 1px solid #eeeeee;
+  width: 80%;
+}
+.modal-content-ministerio, .modal-content-user {
+  z-index: 2;
+  background-color: #dddddd;
+  position: relative;
+  padding: 5px;
+  border: 1px solid #eeeeee;
+  width: 80%;
+}
+li {
+  padding: 0;
+}
+#logo{
+  display: none;
+}
+#community {
+  font-size: 10dvw;
+  margin: 10px;
+  line-height: 1.2;
+  font-weight: bolder;
+}
+#community_description {
+  font-size: 5.5dvw;
+  margin: 10px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+#main_container {
+  width: 80dvw;
+  margin: 70px auto;
+  line-height: 1.2;
+}
+#main_start, #main_visita {
+  border-bottom: solid black 1px;
+}
+#main_start {
+  padding-bottom: 44dvw;
+}
+#main_visita {
+  padding-bottom: 10dvw;
+}
+
+#main_start{
+  display: flex;
+  height: 120dvw;
+  gap: 20px;
+  & article {
+    width: 100%;
+  }
+  & #main_pics {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: 100dvw;
+    & img{
+      margin: 5px;
+    }
+    & button{
+      width: 49%;
+      margin-left: 5px;
+    }
+  }
+}
+#social_media {
+  width: 50%;
+  font-size: 4dvw;
+}
+#organizations {
+  width: 100%;
+}
+#acts29 {
+  width: 18dvw;
+}
+#ante_su_palabra, #world_reformed_fellowship {
+  width: 26dvw;
+}
+
+/* The Close Button */
+/*.close {*/
+/*  color: #aaaaaa;*/
+/*  float: right;*/
+/*  font-size: 28px;*/
+/*  font-weight: bold;*/
+/*}*/
+
+/*.close:hover,*/
+/*.close:focus {*/
+/*  color: #000;*/
+/*  text-decoration: none;*/
+/*  cursor: pointer;*/
+/*}*/

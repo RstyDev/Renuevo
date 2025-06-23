@@ -1,0 +1,6 @@
+/target
+.env
+.shuttle*
+Secrets*.toml
+/dist
+*/.env

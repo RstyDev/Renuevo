@@ -1,0 +1,94 @@
+/*.form {*/
+/*  width: 300px;*/
+/*  margin: auto;*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*}*/
+.form {
+  width: 50%;
+}
+#burger {
+  display: none;
+}
+.main_img {
+  border-radius: 10px;
+  width: 19dvw;
+}
+#main_start, #main_visita {
+  padding-bottom: 8dvw;
+  border-bottom: solid black 1px;
+}
+#main_start{
+  display: flex;
+  height: 40dvw;
+  gap: 20px;
+  & article {
+    width: 50%;
+  }
+  & #main_pics {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    /*gap: 10px;*/
+  }
+}
+#community {
+  font-size: 5dvw;
+  margin: 10px;
+  font-weight: bolder;
+}
+#community_description {
+  font-size: 3dvw;
+  margin: 10px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+#main_container {
+  width: 80dvw;
+  margin: 100px auto;
+  line-height: 1.2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-content ul {
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+}
+.modal-content-ministerio, .modal-content-user {
+  z-index: 2;
+  background-color: #dddddd;
+  position: relative;
+  padding: 5px;
+  border: 1px solid #eeeeee;
+  width: 25%;
+  margin-left: auto;
+}
+#dropdown_ministerio{
+  flex-direction: column;
+}
+#user {
+  &:hover{
+    color: #777777;
+  }
+  position: absolute;
+  font-size: 30px;
+  color: black;
+  margin: 5px 15px;
+  right: 0;
+  top: 3px;
+}
+#logo {
+  height: 32px;
+  margin: 5px;
+}
+header {
+  width: calc(100% - 70px);
+  justify-content: space-between;
+  padding-right: 70px;
+}
+li {
+  padding: 10px;
+}
