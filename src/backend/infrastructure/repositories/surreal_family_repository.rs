@@ -16,9 +16,9 @@ pub struct SurrealFamilyRepository {
 }
 
 impl SurrealFamilyRepository {
-    pub async fn new(env_map: HashMap<String, String>) -> Self {
+    pub async fn new() -> Self {
         Self {
-            pool: establish_connection(env_map).await,
+            pool: establish_connection().await,
         }
     }
 }

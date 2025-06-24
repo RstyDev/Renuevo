@@ -6,16 +6,15 @@ use actix_cors::Cors;
 use actix_web::web;
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use actix_web_httpauth::middleware::HttpAuthentication;
-use std::collections::HashMap;
+use std::env;
 
-pub fn root_routes(config: &mut web::ServiceConfig, env_map: HashMap<String, String>) {
-    let env = env_map.clone();
+pub fn root_routes(config: &mut web::ServiceConfig) {
     let auth = HttpAuthentication::with_fn(move |a, b: Option<BearerAuth>| {
-        validator(a, b, env.to_owned())
+        validator(a, b)
     });
     let cors = Cors::default()
-        .allowed_origin(env_map.get("ORIGIN").unwrap())
-        .allowed_origin(env_map.get("ORIGIN_SECOND").unwrap())
+        .allowed_origin(&env::var("ORIGIN").unwrap())
+        .allowed_origin(&env::var("ORIGIN_SECOND").unwrap())
         .allow_any_method()
         .allow_any_header()
         .max_age(None);

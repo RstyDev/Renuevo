@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::env;
 use surrealdb::{
     engine::any::{connect, Any},
@@ -8,8 +7,8 @@ use surrealdb::{
 
 pub type DBPool = Surreal<Any>;
 
-pub async fn establish_connection(env_map: HashMap<String, String>) -> DBPool {
-    let db = connect(env_map.get("DB_URL").expect("DB URL not set"))
+pub async fn establish_connection() -> DBPool {
+    let db = connect(env::var("DB_URL").expect("DB URL not set"))
         .await
         .expect("Failed to establish connection");
     db.use_ns("church")
@@ -20,8 +19,8 @@ pub async fn establish_connection(env_map: HashMap<String, String>) -> DBPool {
 
     // Authenticate
     db.signin(Root {
-        username: env_map.get("DB_LOGIN").expect("DB LOGIN not set"),
-        password: env_map.get("DB_PASSWORD").expect("DB PASSWORD not set"),
+        username: &env::var("DB_LOGIN").expect("DB LOGIN not set"),
+        password: &env::var("DB_PASSWORD").expect("DB PASSWORD not set"),
     })
     .await
     .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))

@@ -16,9 +16,7 @@ use web_sys::SubmitEvent;
 #[component(inline_props)]
 pub fn AddUserForm(auth: Signal<Auth>) -> View {
     let miembros = create_signal(None);
-    let m1 = miembros.clone();
     let miembros2 = miembros.clone();
-
     block_on(async move {
         refresh_users(miembros, auth.clone()).await;
     });

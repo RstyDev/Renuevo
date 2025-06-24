@@ -13,12 +13,11 @@ use actix_web::{
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
-use std::{collections::HashMap, env};
+use std::env;
 
 #[post("/login")]
 pub async fn login(
     db: Data<DBPool>,
-    env: Data<HashMap<String, String>>,
     user: Json<LoginForm>,
 ) -> impl Responder {
     let LoginForm {
@@ -37,13 +36,11 @@ pub async fn login(
                     let id = hermano.id().as_ref().unwrap().id.to_string();
                     let token = get_token(
                         Duration::minutes(5),
-                        env.as_ref(),
                         TokenType::Normal,
                         id.clone(),
                     );
                     let refresh = get_token(
                         Duration::days(1),
-                        env.as_ref(),
                         TokenType::Refresh,
                         id.clone(),
                     );
@@ -62,14 +59,13 @@ pub async fn login(
 
 fn get_token(
     duration: Duration,
-    env: &HashMap<String, String>,
     tipo: TokenType,
     id: String,
 ) -> String {
     let now = Utc::now();
     let secret = match tipo {
-        TokenType::Refresh => env.get("REFRESH_SECRET").unwrap(),
-        TokenType::Normal => env.get("SECRET").unwrap(),
+        TokenType::Refresh => env::var("REFRESH_SECRET").unwrap(),
+        TokenType::Normal => env::var("SECRET").unwrap(),
     };
     let claims = Claims {
         nbf: now.timestamp() as usize,
@@ -88,12 +84,11 @@ fn get_token(
 
 fn validate_token(
     token: String,
-    env: &HashMap<String, String>,
     tipo: TokenType,
 ) -> Result<Claims, AppError> {
     let secret = match tipo {
-        TokenType::Refresh => env.get("REFRESH_SECRET").unwrap(),
-        TokenType::Normal => env.get("SECRET").unwrap(),
+        TokenType::Refresh => env::var("REFRESH_SECRET").unwrap(),
+        TokenType::Normal => env::var("SECRET").unwrap(),
     };
     let decoding_key = DecodingKey::from_secret(secret.as_bytes());
     let res = decode(&token, &decoding_key, &Validation::default());
@@ -108,10 +103,9 @@ pub async fn refresh_token(refresh_jwt: Option<BearerAuth>) -> HttpResponse {
     let Some(refresh) = refresh_jwt else {
         return HttpResponse::Forbidden().json("Token no enviado");
     };
-    let env = env::vars().collect::<HashMap<String, String>>();
-    match validate_token(refresh.token().to_string(), &env, TokenType::Refresh) {
+    match validate_token(refresh.token().to_string(), TokenType::Refresh) {
         Ok(c) => {
-            let token = get_token(Duration::minutes(5), &env, TokenType::Normal, c.id);
+            let token = get_token(Duration::minutes(5), TokenType::Normal, c.id);
             let res = RefreshResult { token };
             HttpResponse::Ok().json(res)
         }
@@ -122,13 +116,12 @@ pub async fn refresh_token(refresh_jwt: Option<BearerAuth>) -> HttpResponse {
 pub async fn validator(
     req: ServiceRequest,
     credenciales: Option<BearerAuth>,
-    env_map: HashMap<String, String>,
 ) -> Result<ServiceRequest, (ActixError, ServiceRequest)> {
     let Some(cred) = credenciales else {
         return Err((error::ErrorBadRequest("No se recibió el token"), req));
     };
     let token = cred.token().to_string();
-    match validate_token(token, &env_map, TokenType::Normal) {
+    match validate_token(token, TokenType::Normal) {
         Ok(_) => Ok(req),
         Err(_) => Err((error::ErrorForbidden(String::from("No tiene acceso")), req)),
     }

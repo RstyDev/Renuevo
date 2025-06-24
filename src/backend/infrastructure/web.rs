@@ -7,19 +7,17 @@ use crate::backend::{
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
 use actix_web::web::Data;
-use actix_web::{web, App, HttpServer};
+use actix_web::{App, HttpServer};
 use dotenv::dotenv;
-use std::collections::HashMap;
 use std::env;
 use surrealdb::opt::IntoQuery;
 
 pub async fn run() -> std::io::Result<()> {
     println!("{:#?}", dotenv().ok());
-    let env_map = env::vars().collect::<HashMap<String, String>>();
-    let repo = SurrealUserRepository::new(env_map.clone()).await;
-    let family_repo = SurrealFamilyRepository::new(env_map.clone()).await;
-    let app_data = web::Data::new(repo);
-    let db = establish_connection(env_map.clone()).await;
+    let repo = SurrealUserRepository::new().await;
+    let family_repo = SurrealFamilyRepository::new().await;
+    let app_data = Data::new(repo);
+    let db = establish_connection().await;
     println!("Starting...");
 
     //App::new()
@@ -40,27 +38,25 @@ pub async fn run() -> std::io::Result<()> {
     //             .service(delete_user)
     //             .service(update_user)
     //         )
-    let map = env_map.clone();
+
     let app = HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin(map.get("ORIGIN").unwrap())
-            .allowed_origin(map.get("ORIGIN_SECOND").unwrap())
+            .allowed_origin(&env::var("ORIGIN").unwrap())
+            .allowed_origin(&env::var("ORIGIN_SECOND").unwrap())
             .allow_any_method()
             .allow_any_header()
             .max_age(None);
 
-        let env_map = map.clone();
+
         App::new()
             .app_data(app_data.to_owned())
             .app_data(Data::new(family_repo.to_owned()))
-            .app_data(Data::new(map.to_owned()))
             .app_data(Data::new(db.to_owned()))
             .wrap(Logger::default())
             .wrap(cors)
-            .configure(|config| root_routes(config, env_map))
+            .configure(|config| root_routes(config))
     })
-    .bind((env_map.get("HOST").expect("HOST not set").as_str(), 8088))?
-    .run();
+    .bind((&env::var("HOST").expect("HOST not set").as_str(), 8088))?;
     println!("Running!");
-    app.await
+    app.run().await
 }
