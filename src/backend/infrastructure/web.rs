@@ -56,7 +56,7 @@ pub async fn run() -> std::io::Result<()> {
             .wrap(cors)
             .configure(|config| root_routes(config))
     })
-    .bind((&env::var("HOST").expect("HOST not set").as_str(), 8088))?;
+    .bind((env::var("HOST").expect("HOST not set").as_str(), 8088))?;
     println!("Running!");
     app.run().await
 }
