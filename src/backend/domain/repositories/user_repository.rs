@@ -1,3 +1,4 @@
+#![allow(async_fn_in_trait)]
 use crate::{entities::Persona, error::AppRes};
 
 pub trait UserRepository {

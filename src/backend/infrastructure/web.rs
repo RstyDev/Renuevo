@@ -10,6 +10,7 @@ use actix_web::web::Data;
 use actix_web::{App, HttpServer};
 use dotenv::dotenv;
 use std::env;
+use std::env::VarError;
 use surrealdb::opt::IntoQuery;
 
 pub async fn run() -> std::io::Result<()> {
@@ -41,11 +42,11 @@ pub async fn run() -> std::io::Result<()> {
 
     let app = HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin(&env::var("ORIGIN").unwrap())
-            .allowed_origin(&env::var("ORIGIN_SECOND").unwrap())
-            .allow_any_method()
-            .allow_any_header()
-            .max_age(None);
+            .allowed_origin(&env::var("ORIGIN").unwrap());
+        let cors = match &env::var("ORIGIN_SECOND"){
+            Ok(var) => cors.allowed_origin(var).allow_any_method().allow_any_header().max_age(None),
+            Err(_) => cors.allow_any_method().allow_any_header().max_age(None),
+        };
 
 
         App::new()

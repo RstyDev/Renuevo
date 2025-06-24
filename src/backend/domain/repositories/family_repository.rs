@@ -1,3 +1,4 @@
+#![allow(async_fn_in_trait)]
 use crate::{entities::Familia, error::AppRes};
 
 pub trait FamilyRepository {
