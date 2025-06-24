@@ -13,11 +13,11 @@ pub fn root_routes(config: &mut web::ServiceConfig) {
         validator(a, b)
     });
     let cors = Cors::default()
-        .allowed_origin(&env::var("ORIGIN").unwrap())
-        .allowed_origin(&env::var("ORIGIN_SECOND").unwrap())
-        .allow_any_method()
-        .allow_any_header()
-        .max_age(None);
+        .allowed_origin(&env::var("ORIGIN").unwrap());
+    let cors = match &env::var("ORIGIN_SECOND"){
+        Ok(var) => cors.allowed_origin(var).allow_any_method().allow_any_header().max_age(None),
+        Err(_) => cors.allow_any_method().allow_any_header().max_age(None),
+    };
 
     config.service(login).service(refresh_token).service(
         web::scope("/api/v1/users")
