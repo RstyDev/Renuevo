@@ -33,6 +33,9 @@ header {
     visibility: visible;
   }
 }
+.user_card {
+  max-width: 90%;
+}
 /* Modal Content */
 .modal-content ul {
   margin: 0;
@@ -43,6 +46,7 @@ header {
   border: 1px solid #eeeeee;
   width: 80%;
 }
+
 .modal-content-ministerio, .modal-content-user {
   z-index: 2;
   background-color: #dddddd;
