@@ -19,6 +19,7 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
         }
         _ => None,
     });
+    let user3 = user.clone();
     view! {
         article(class = "user_card",on:click = move |_|{expanded.set(!expanded.get())}){
             h4(){
@@ -32,10 +33,14 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
                 })
                 (match mode {
                     Mode::View => view!{},
-                    Mode::Edit => view!{
-                        button(on:click=move|_|{
-                            action.set(ActionOnUser::Edit);
-                        }){"Edit"}
+                    Mode::Edit(act) => {
+                        let user2 = user3.clone();
+                        view!{
+                            button(on:click=move|_|{
+                                act.set(ActionOnUser::Edit(user2.to_owned()));
+                                // action.set(ActionOnUser::Edit(user2.to_owned()));
+                            }){"Edit"}
+                        }
                     },
                     Mode::Delete => view!{
                         button(on:click=move|_|{
@@ -64,14 +69,15 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
     }
 }
 
+#[derive(Clone, Debug, PartialEq)]
 pub enum Mode {
     View,
-    Edit,
+    Edit(Signal<ActionOnUser>),
     Delete,
 }
 #[derive(Clone, Debug, PartialEq)]
 pub enum ActionOnUser {
     None,
-    Edit,
+    Edit(Persona),
     Delete,
 }

@@ -16,9 +16,6 @@ impl<T: UserRepository> UserService<T> {
         self.user_repo.save(&user).await
     }
 
-    pub async fn get_by_email(&self, email: &str) -> Option<Persona> {
-        self.user_repo.find_by_email(email).await
-    }
     pub async fn get_by_id(&self, id: &str) -> AppRes<Option<Persona>> {
         self.user_repo.get_by_id(id).await
     }

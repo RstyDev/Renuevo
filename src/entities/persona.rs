@@ -120,6 +120,16 @@ pub enum EstadoCivil {
     Viudo,
 }
 
+impl ToString for EstadoCivil {
+    fn to_string(&self) -> String {
+        String::from(match self{
+            EstadoCivil::Soltero => "Soltero",
+            EstadoCivil::Casado => "Casado",
+            EstadoCivil::Viudo => "Viudo",
+        })
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub enum TipoAnciano {
     Governante,

@@ -2,7 +2,7 @@ use crate::{
     backend::{
         application::use_cases::users::{
             delete_user::DeleteUserUseCase, get_all_users::GetAllUsersUseCase,
-            get_user_by_id::GetUserByIdUseCase, get_user_by_mail::GetUserByEmailUseCase,
+            get_user_by_id::GetUserByIdUseCase,
             register_user::RegisterUserUseCase, update_user::UpdateUserUseCase,
         },
         infrastructure::repositories::surreal_user_repository::SurrealUserRepository,
@@ -85,19 +85,5 @@ pub async fn register_user_handler(
             eprintln!("Error registering user: {:?}", e);
             HttpResponse::InternalServerError().body("Please try again")
         }
-    }
-}
-
-#[get("/email/{email}")]
-pub async fn get_by_email(repo: Data<SurrealUserRepository>, email: Path<String>) -> HttpResponse {
-    match GetUserByEmailUseCase::new(repo.into_inner())
-        .get_by_email(&email.into_inner())
-        .await
-    {
-        None => {
-            eprintln!("User not found");
-            HttpResponse::NotFound().finish()
-        }
-        Some(u) => HttpResponse::Ok().json(u),
     }
 }

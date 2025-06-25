@@ -3,6 +3,7 @@ use crate::frontend::{
     components::{
         delete_user_form::refresh_users,
         user_card::{ActionOnUser, Mode, UserCard},
+        user_cards::UserCards,
     },
     lib::{log, request},
     structs::Auth,
@@ -68,9 +69,9 @@ pub fn AddUserForm(auth: Signal<Auth>) -> View {
             div(){
                 label(r#for="Estado Civil"){"Estado Civil: "}
                 select(required=true, value="Soltero", bind:value=estado_civil){
-                    option(value="Soltero"){"Soltero"}
-                    option(value="Viudo"){"Viudo"}
-                    option(value="Casado"){"Casado"}
+                    option(value="Soltero/a"){"Soltero"}
+                    option(value="Viudo/a"){"Viudo"}
+                    option(value="Casado/a"){"Casado"}
                 }
                 // input(placeholder="Estado Civil", required = true, bind:value=estado_civil){}
             }
@@ -81,18 +82,6 @@ pub fn AddUserForm(auth: Signal<Auth>) -> View {
 
             input(r#type="submit"){"Agregar"}
         }
-        (match miembros.get_clone() {
-            Some(miembros) => {
-                let iter = miembros.into_iter().map(|m|{
-                    let action = create_signal(ActionOnUser::None);
-                    view!{li(){UserCard(user=m, mode = Mode::View, action = action)}}}).collect::<Vec<View>>();
-                view!{
-                    ul(id = "miembros"){
-                        (iter)
-                    }
-                }
-            },
-            None=>view!{},
-        })
+        UserCards(auth=auth.clone(),miembros=miembros.clone(),mode= Mode::View)
     }
 }

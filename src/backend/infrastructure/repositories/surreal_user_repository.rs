@@ -26,32 +26,7 @@ impl SurrealUserRepository {
 }
 
 impl UserRepository for Arc<SurrealUserRepository> {
-    async fn find_by_email(&self, email: &str) -> Option<Persona> {
-        //a testear
-        // let res = self
-        //     .pool
-        //     .query(
-        //         r#"
-        // SELECT SINGLE * FROM personas WHERE email = $email
-        // "#,
-        //     )
-        //     .bind(("email", email))
-        //     .await;
-        // match res {
-        //     Ok(mut r) => {
-        //         let value = r.take::<Value>(0).ok();
-        //         value.map(|p| {
-        //             let persona = p.into();
-        //             Persona::from_db(persona)
-        //         })
-        //     }
-        //     Err(e) => {
-        //         println!("{:?}", e);
-        //         None
-        //     }
-        // }
-        None
-    }
+
 
     async fn save(&self, user: &Persona) -> AppRes<()> {
         if user.password().unwrap().len() < 6 {
