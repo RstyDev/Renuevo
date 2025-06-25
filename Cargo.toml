@@ -30,7 +30,7 @@ serde-wasm-bindgen = { version = "0.6.5", optional = true }
 console_error_panic_hook = { version = "0.1.7", optional = true }
 reqwest = { version = "0.12", features = ["json"], optional = true }
 async-std = { version = "1.13.0", optional = false }
-web-sys = { version = "0.3.77", optional = true }
+web-sys = { version = "0.3.77", optional = true, features = ["WebSocket", 'Window', 'Document', 'HtmlDocument'] }
 
 
 [features]

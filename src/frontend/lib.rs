@@ -65,7 +65,7 @@ pub async fn request<T: DeserializeOwned>(
                     match fetch::<RefreshResult>(
                         &format!("{}/refresh_token", HOST.as_str()),
                         auth.refresh.clone(),
-                        Method::GET,
+                        Method::POST,
                         None::<bool>,
                     )
                     .await

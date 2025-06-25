@@ -5,9 +5,27 @@ use async_std::task::block_on;
 use chrono::NaiveDate;
 use reqwest::Method;
 use sycamore::prelude::*;
+use wasm_bindgen::JsCast;
 
 #[component(inline_props)]
 pub fn EditUserForm(auth: Signal<Auth>) -> View {
+
+    // let window = web_sys::window().unwrap();
+    // let document = window.document().unwrap();
+    // let html_document = document.dyn_into::<web_sys::HtmlDocument>().unwrap();
+    //
+    // let cookie = html_document.cookie().unwrap();
+    // log("Edit",13,&cookie);
+
+
+    // html_document.set_cookie(&format!("token = {}",match auth.get_clone(){
+    //     Auth::Logged(login) => login.token,
+    //     Auth::NotLogged => String::new(),
+    // })).unwrap();
+    // html_document.set_cookie(&format!("refresh = {}",match auth.get_clone(){
+    //     Auth::Logged(login) => login.refresh,
+    //     Auth::NotLogged => String::new(),
+    // })).unwrap();
     let miembros = create_signal(None);
     let form = create_signal(None::<Persona>);
     let action = create_signal(ActionOnUser::None);

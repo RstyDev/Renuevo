@@ -58,5 +58,6 @@ pub struct LoginResult {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct RefreshResult {
+    pub id: String,
     pub token: String,
 }

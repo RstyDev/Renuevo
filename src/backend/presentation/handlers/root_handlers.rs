@@ -105,13 +105,16 @@ pub async fn refresh_token(refresh_jwt: Option<BearerAuth>) -> HttpResponse {
     };
     match validate_token(refresh.token().to_string(), TokenType::Refresh) {
         Ok(c) => {
-            let token = get_token(Duration::minutes(5), TokenType::Normal, c.id);
-            let res = RefreshResult { token };
+            let token = get_token(Duration::minutes(5), TokenType::Normal, c.id.clone());
+            let res = RefreshResult { id: c.id, token };
             HttpResponse::Ok().json(res)
         }
         Err(_) => HttpResponse::Unauthorized().json("Token invalid"),
     }
 }
+
+// #[post("/login_by_token")]
+// pub async fn login_by_token()
 
 pub async fn validator(
     req: ServiceRequest,
