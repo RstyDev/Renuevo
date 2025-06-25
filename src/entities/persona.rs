@@ -12,6 +12,7 @@ pub struct Persona {
     password: Option<String>,
     nombre: String,
     apellido: String,
+    sexo: Sexo,
     nacimiento: NaiveDate,
     estado_civil: EstadoCivil,
     estado: Estado,
@@ -24,6 +25,7 @@ impl Persona {
         password: Option<String>,
         nombre: String,
         apellido: String,
+        sexo: Sexo,
         nacimiento: NaiveDate,
         estado_civil: EstadoCivil,
         estado: Estado,
@@ -34,6 +36,7 @@ impl Persona {
             password,
             nombre,
             apellido,
+            sexo,
             nacimiento,
             estado_civil,
             estado,
@@ -74,7 +77,9 @@ impl Persona {
     pub fn set_estado_civil(&mut self, estado_civil: EstadoCivil) {
         self.estado_civil = estado_civil;
     }
-
+    pub fn sexo(&self) -> Sexo {
+        self.sexo
+    }
     pub fn set_estado(&mut self, estado: Estado) {
         self.estado = estado;
     }
@@ -90,6 +95,7 @@ impl Persona {
                 p,
                 self.nombre,
                 self.apellido,
+                self.sexo,
                 self.nacimiento,
                 self.estado_civil,
                 self.estado,
@@ -104,12 +110,15 @@ impl Persona {
             password: None,
             nombre: persona.nombre().to_string(),
             apellido: persona.apellido().to_string(),
+            sexo: persona.sexo(),
             nacimiento: persona.nacimiento(),
             estado_civil: persona.estado_civil().clone(),
             estado: persona.estado().clone(),
             registrado: persona.registrado(),
         }
     }
+
+
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
@@ -178,5 +187,20 @@ impl Estado {
             Estado::Diacono { .. } => "Diácono",
             Estado::Anciano { .. } => "Anciano",
         }
+    }
+}
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Default)]
+pub enum Sexo {
+    #[default]
+    Masculino,
+    Femenino
+}
+
+impl ToString for Sexo {
+    fn to_string(&self) -> String {
+        String::from(match self{
+            Sexo::Masculino => "Masculino",
+            Sexo::Femenino => "Femenino",
+        })
     }
 }

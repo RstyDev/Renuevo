@@ -1,4 +1,4 @@
-use crate::entities::{Estado, EstadoCivil};
+use crate::entities::{Estado, EstadoCivil, Sexo};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
@@ -10,6 +10,7 @@ pub struct PersonaDB {
     password: String,
     nombre: String,
     apellido: String,
+    sexo: Sexo,
     nacimiento: NaiveDate,
     estado_civil: EstadoCivil,
     estado: Estado,
@@ -21,6 +22,7 @@ impl PersonaDB {
         password: String,
         nombre: String,
         apellido: String,
+        sexo: Sexo,
         nacimiento: NaiveDate,
         estado_civil: EstadoCivil,
         estado: Estado,
@@ -31,6 +33,7 @@ impl PersonaDB {
             password,
             nombre,
             apellido,
+            sexo,
             nacimiento,
             estado_civil,
             estado,
@@ -68,5 +71,9 @@ impl PersonaDB {
 
     pub fn registrado(&self) -> NaiveDate {
         self.registrado
+    }
+
+    pub fn sexo(&self) -> Sexo {
+        self.sexo
     }
 }

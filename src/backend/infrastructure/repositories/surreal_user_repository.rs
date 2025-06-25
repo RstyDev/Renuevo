@@ -43,6 +43,7 @@ impl UserRepository for Arc<SurrealUserRepository> {
             password: crypto::sha512($hermano.password),
             nombre: $hermano.nombre,
             apellido: $hermano.apellido,
+            sexo: $hermano.sexo,
             nacimiento: $hermano.nacimiento,
             estado_civil: $hermano.estado_civil,
             estado: $hermano.estado,
@@ -96,8 +97,6 @@ impl UserRepository for Arc<SurrealUserRepository> {
         match persona.id() {
             None => Err(AppError::DBErr(92, "User sent without ID".to_string())),
             Some(id) => {
-                //let resource = Resource::new(("","").into());
-                //match db.update::<Option<Hermano>>(resource.into()).content(user.into()).await {
                 match self
                     .pool
                     .upsert::<Option<PersonaDB>>(("personas", id.clone()))

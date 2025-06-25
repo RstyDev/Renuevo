@@ -6,12 +6,12 @@ use crate::{entities::LoginResult ,frontend::{
     components::header::Header,
     pages::main_page::MainPage,
     structs::{Auth, Tabs},
-    lib::{request, HOST, log, rfc_7231},
+    lib::{HOST, log, rfc_7231},
 }};
 use sycamore::prelude::*;
 use wasm_bindgen::JsCast;
 use crate::entities::RefreshResult;
-use chrono::{prelude::*, Days, Months};
+use chrono::{prelude::*, Days};
 
 #[component]
 pub fn App() -> View {

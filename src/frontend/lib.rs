@@ -1,8 +1,8 @@
 use crate::entities::{LoginResult, RefreshResult};
 use crate::error::{AppError, AppRes};
 use crate::frontend::structs::Auth;
-use reqwest::{Body, Method, StatusCode};
-use serde::de::{Deserialize, DeserializeOwned};
+use reqwest::{Method, StatusCode};
+use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 use sycamore::prelude::Signal;
 // use lazy_static::lazy_static;

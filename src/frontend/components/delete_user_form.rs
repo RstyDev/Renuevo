@@ -1,5 +1,5 @@
 use crate::entities::Persona;
-use crate::frontend::components::{user_card::{ActionOnUser, Mode, UserCard}, user_cards::UserCards};
+use crate::frontend::components::{user_card::Mode, user_cards::UserCards};
 use crate::frontend::{lib::request, structs::Auth};
 use async_std::task::block_on;
 use reqwest::Method;
@@ -13,8 +13,7 @@ pub async fn refresh_users(miembros: Signal<Option<Vec<Persona>>>, auth: Signal<
     );
 }
 #[component(inline_props)]
-pub fn DeleteUserForm(auth: Signal<Auth>) -> View {
-    let miembros = create_signal(None);
+pub fn DeleteUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
     let miembros2 = miembros.clone();
     block_on(async move {
         refresh_users(miembros, auth.clone()).await;

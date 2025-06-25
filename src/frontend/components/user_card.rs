@@ -10,10 +10,10 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
         Estado::Anciano { servicio, .. }
         | Estado::Diacono { servicio, .. }
         | Estado::Miembro { servicio, .. } => {
-            let mut servicios = String::from(&servicio[0].area().to_string().to_lowercase());
+            let mut servicios = String::from(&servicio[0].area().to_string());
             for i in 1..servicio.len() {
                 servicios.push_str(", ");
-                servicios.push_str(servicio[i].area().to_string().to_lowercase().as_str());
+                servicios.push_str(servicio[i].area().to_string().as_str());
             }
             Some(servicios)
         }
@@ -26,7 +26,7 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
                 (format!("{} {}",user.nombre(),user.apellido()))
             }
             section(class=format!("user_card_info_{}", expanded.get())){
-                p(){(format!("Estado: {}",us1.estado().to_plain_string().to_lowercase()))}
+                p(){(format!("Estado: {}",us1.estado().to_plain_string()))}
                 (match servicio_selector.get_clone(){
                     Some(servicios) => view!{p(){(format!("Servicio: {}",servicios))}},
                     None => view!{},
@@ -38,7 +38,6 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
                         view!{
                             button(on:click=move|_|{
                                 act.set(ActionOnUser::Edit(user2.to_owned()));
-                                // action.set(ActionOnUser::Edit(user2.to_owned()));
                             }){"Edit"}
                         }
                     },
@@ -49,22 +48,6 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
                     },
                 })
             }
-            // (match expanded_selector.get(){
-            //     true => {
-            //         let us1 = us1.to_owned();
-            //         view!{
-            //             section(class="user_card_info"){
-            //                 p(){(format!("Estado: {}",us1.estado().to_plain_string().to_lowercase()))}
-            //                 (match servicio_selector.get_clone(){
-            //                     Some(servicios) => view!{p(){(format!("Servicio: {}",servicios))}},
-            //                     None => view!{},
-            //                 })
-            //             }
-            //         }
-            //     },
-            //     false=> view!{},
-            // })
-
         }
     }
 }

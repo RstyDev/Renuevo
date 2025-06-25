@@ -1,8 +1,8 @@
-use crate::entities::{Estado, EstadoCivil, Persona};
+use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
 use crate::frontend::{
     components::{
         delete_user_form::refresh_users,
-        user_card::{ActionOnUser, Mode, UserCard},
+        user_card::Mode,
         user_cards::UserCards,
     },
     lib::{log, request},
@@ -15,14 +15,17 @@ use sycamore::prelude::*;
 use web_sys::SubmitEvent;
 
 #[component(inline_props)]
-pub fn AddUserForm(auth: Signal<Auth>) -> View {
-    let miembros = create_signal(None);
+pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
     let miembros2 = miembros.clone();
-    block_on(async move {
-        refresh_users(miembros, auth.clone()).await;
-    });
+    // block_on(async move {
+    //     refresh_users(miembros, auth.clone()).await;
+    // });
     let nombre = create_signal(String::new());
     let apellido = create_signal(String::new());
+    let sexo = create_signal(String::new());
+    create_effect(move || {
+        log("Add",28,&sexo.get_clone())
+    });
     let estado_civil = create_signal(String::new());
     let nacimiento = create_signal(String::new());
     let submit_fn = move |ev: SubmitEvent| {
@@ -34,6 +37,11 @@ pub fn AddUserForm(auth: Signal<Auth>) -> View {
             Some(String::from("123456")),
             nombre.get_clone(),
             apellido.get_clone(),
+            match sexo.get_clone().as_str(){
+                "Masculino" => Sexo::Masculino,
+                "Femenino" => Sexo::Femenino,
+                _ => panic!("Not possible"),
+            },
             birth,
             match estado_civil.get_clone().as_str() {
                 "Soltero" => EstadoCivil::Soltero,
@@ -67,11 +75,18 @@ pub fn AddUserForm(auth: Signal<Auth>) -> View {
                 input(name="Apellido", required = true, bind:value=apellido){}
             }
             div(){
+                label(r#for="Sexo"){"Sexo: "}
+                select(name="Sexo", required = true, bind:value=sexo){
+                    option(value="Masculino"){"Masculino"}
+                    option(value="Femenino"){"Femenino"}
+                }
+            }
+            div(){
                 label(r#for="Estado Civil"){"Estado Civil: "}
                 select(required=true, value="Soltero", bind:value=estado_civil){
-                    option(value="Soltero/a"){"Soltero"}
-                    option(value="Viudo/a"){"Viudo"}
-                    option(value="Casado/a"){"Casado"}
+                    option(value="Soltero"){"Soltero/a"}
+                    option(value="Viudo"){"Viudo/a"}
+                    option(value="Casado"){"Casado/a"}
                 }
                 // input(placeholder="Estado Civil", required = true, bind:value=estado_civil){}
             }
@@ -80,7 +95,7 @@ pub fn AddUserForm(auth: Signal<Auth>) -> View {
                 input(name="Nacimiento", r#type="date", required = true, bind:value=nacimiento){}
             }
 
-            input(r#type="submit"){"Agregar"}
+            input(r#type="submit", value="Agregar"){"Agregar"}
         }
         UserCards(auth=auth.clone(),miembros=miembros.clone(),mode= Mode::View)
     }
