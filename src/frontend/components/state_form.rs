@@ -1,17 +1,23 @@
 use std::str::FromStr;
 use sycamore::prelude::*;
-use crate::frontend::structs::Auth;
+use crate::entities::{Bautismo, Estado};
+use crate::frontend::{structs::Auth, lib::log};
 
 #[component(inline_props)]
-pub fn StateForm(auth: Signal<Auth>
-                 // , estado: ReadSignal<EstadoLocal>
-) -> View {
-    let show_conversion = create_signal(false);
-    let show_bautismo = create_signal(false);
-    let show_servicio = create_signal(false);
+pub fn StateForm(auth: Signal<Auth>, estado: Signal<Estado>) -> View {
+    log("StateForm",8,&estado.get_clone());
     let conversion = create_signal(String::new());
+
     view!{
-        div(hidden = show_conversion.get()){
+        (match estado.get_clone() {
+            Estado::Visitante => view!{},
+            Estado::Nuevo => view!{},
+            Estado::Fundamentos {conversion, bautismo} | Estado::PreMiembro {conversion, bautismo} => view!{},
+            Estado::Miembro {conversion, bautismo, servicio} => view!{},
+            Estado::Diacono {conversion, bautismo, servicio} => view!{},
+            Estado::Anciano {conversion, bautismo, servicio, tipo} => view!{},
+        })
+        div(){
             label(r#for="conversion"){"Fecha de Conversion: "}
             input(r#type="date", name="conversion", bind:value=conversion)
         }
@@ -45,28 +51,3 @@ pub fn StateForm(auth: Signal<Auth>
         servicio: Vec<Servicio>,
     },
 */
-
-#[derive(PartialEq, Copy, Clone)]
-pub enum EstadoLocal {
-    Visitante,
-    Nuevo,
-    Fundamentos,
-    PreMiembro,
-    Miembro,
-    Diacono,
-    Anciano,
-}
-
-impl EstadoLocal {
-    pub fn from_str(s: &str) -> Self {
-        match s{
-            "Nuevo" => EstadoLocal::Nuevo,
-            "Fundamentos" => EstadoLocal::Fundamentos,
-            "PreMiembro" => EstadoLocal::PreMiembro,
-            "Miembro" => EstadoLocal::Miembro,
-            "Diacono" => EstadoLocal::Diacono,
-            "Anciano" => EstadoLocal::Anciano,
-            _ => EstadoLocal::Visitante,
-        }
-    }
-}

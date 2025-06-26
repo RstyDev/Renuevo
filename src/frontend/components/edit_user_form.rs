@@ -1,5 +1,5 @@
-use crate::entities::{Estado, Persona, Sexo};
-use crate::frontend::components::{user_card::{ActionOnUser, Mode}, user_cards::UserCards};
+use crate::entities::{Estado, Persona, Sexo, Bautismo};
+use crate::frontend::components::{user_card::{ActionOnUser, Mode}, user_cards::UserCards, state_form::StateForm};
 use crate::frontend::{lib::log, structs::Auth};
 use sycamore::prelude::*;
 
@@ -13,19 +13,14 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
     let estado = create_signal(String::new());
     let conversion = create_signal(String::new());
     let fecha_bautismo = create_signal(String::new());
-    let profesion_de_fe = create_signal(String::new());
+    let bautismo = create_signal(Bautismo::default());
     let iglesia_bautismo = create_signal(String::new());
     let form_selector = create_selector(move ||form.get_clone());
-    // let estado_selector = create_selector(move ||
-    //     EstadoLocal::from_str(estado.get_clone().as_str())
-    // );
-    // create_effect(move || {
-    //
-    // });
+    // let servicio = create_signal(Vec::new());
+    let opciones_estado = create_signal(
+        Estado::Visitante
+    );
 
-    // create_effect(move || {
-    //     log("Edit:",27,&estado_selector.get_clone())
-    // });
 
     create_memo(move || {
         match act2.get_clone() {
@@ -43,6 +38,7 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
         log("Edit User Form",24,&form.get_clone());
         match form.get_clone() {
             Some(user) => {
+                opciones_estado.set(user.estado().clone());
                 estado.set(user.estado().to_plain_string().to_string());
                 estado_civil.set(user.estado_civil().to_string());
                 log("Edit User Form",41,&user.estado().to_plain_string());
@@ -144,7 +140,7 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
                                 })
                             }
                         }
-                        // StateForm(auth = auth.clone() )
+                        StateForm(auth = auth.clone(), estado = opciones_estado)
                         //aca se sigue
                     }
                 }

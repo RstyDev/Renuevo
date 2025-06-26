@@ -1,7 +1,7 @@
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
 pub struct Bautismo {
     fecha: NaiveDate,
     profesion_de_fe: Option<NaiveDate>,

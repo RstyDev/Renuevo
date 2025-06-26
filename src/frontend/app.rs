@@ -15,20 +15,13 @@ use chrono::{prelude::*, Days};
 
 #[component]
 pub fn App() -> View {
-
-    log("App",19,&rfc_7231(Utc::now()));
-
     let window = web_sys::window().unwrap();
     let document = window.document().unwrap();
     let html_document = document.dyn_into::<web_sys::HtmlDocument>().unwrap();
-
     let logged = create_signal(Auth::NotLogged);
     let error_message = create_signal(String::new());
     let tab = create_signal(Tabs::Inicio);
     let persona = create_signal(None);
-    // create_memo(move ||{
-    //     console_log!("Tab: {:#?}",tab.get_clone())
-    // });
     let cookie = html_document.cookie().unwrap();
     create_memo(move || match logged.get_clone() {
         Auth::NotLogged => {
@@ -42,14 +35,12 @@ pub fn App() -> View {
             html_document.set_cookie(&format!("refresh={}; expires={}; path=/",&login.refresh,rfc_7231(Utc::now().checked_add_days(Days::new(1)).unwrap()))).unwrap();
         }
     });
-    log("App",39,&cookie);
     let logged2 = logged.clone();
     block_on(async move {
         match cookie.split("refresh=").nth(1) {
             Some(first_part) => {
                 let token = first_part.split(";").nth(0).unwrap();
                 if token.len()>10 {
-                    log("App",43,&token);
                     let client = reqwest::Client::builder().build().unwrap();
                     let res = client
                         .request(Method::POST, &format!("{}/refresh_token", HOST.as_str()))
