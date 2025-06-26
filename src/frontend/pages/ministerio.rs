@@ -29,8 +29,8 @@ pub fn Ministerio(auth: Signal<Auth>, ministerio: Ministerio) -> View {
         Ministerio::Palabra => view! {
             Palabra()
         },
-        Ministerio::Ancianato => view! {
-            Ancianato(auth = auth)
+        Ministerio::Presbiterado => view! {
+            Presbiterado(auth = auth)
         },
     };
 

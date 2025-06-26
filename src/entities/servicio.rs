@@ -10,7 +10,7 @@ pub enum Ministerio {
     Alabanza,
     Misericordia,
     Palabra,
-    Ancianato,
+    Presbiterado,
 }
 
 impl ToString for Ministerio {
@@ -24,7 +24,7 @@ impl ToString for Ministerio {
             Ministerio::Alabanza => String::from("Alabanza"),
             Ministerio::Misericordia => String::from("Misericordia"),
             Ministerio::Palabra => String::from("Palabra"),
-            Ministerio::Ancianato => String::from("Ancianato"),
+            Ministerio::Presbiterado => String::from("Presbiterado"),
         }
     }
 }
@@ -38,6 +38,7 @@ impl Servicio {
     pub fn new(leader: bool, area: Ministerio) -> Self {
         Self { leader, area }
     }
+    pub fn leader(&self) -> bool {self.leader}
     pub fn area(&self) -> &Ministerio {
         &self.area
     }

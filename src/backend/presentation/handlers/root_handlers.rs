@@ -16,10 +16,7 @@ use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation}
 use std::env;
 
 #[post("/login")]
-pub async fn login(
-    db: Data<DBPool>,
-    user: Json<LoginForm>,
-) -> impl Responder {
+pub async fn login(db: Data<DBPool>, user: Json<LoginForm>) -> impl Responder {
     let LoginForm {
         nombre,
         apellido,
@@ -34,16 +31,8 @@ pub async fn login(
                 if d.len() > 0 {
                     let hermano = &d[0];
                     let id = hermano.id().as_ref().unwrap().id.to_string();
-                    let token = get_token(
-                        Duration::minutes(5),
-                        TokenType::Normal,
-                        id.clone(),
-                    );
-                    let refresh = get_token(
-                        Duration::days(1),
-                        TokenType::Refresh,
-                        id.clone(),
-                    );
+                    let token = get_token(Duration::minutes(5), TokenType::Normal, id.clone());
+                    let refresh = get_token(Duration::days(1), TokenType::Refresh, id.clone());
                     let res = LoginResult { id, token, refresh };
                     HttpResponse::Ok().json(res)
                 } else {
@@ -57,11 +46,7 @@ pub async fn login(
     }
 }
 
-fn get_token(
-    duration: Duration,
-    tipo: TokenType,
-    id: String,
-) -> String {
+fn get_token(duration: Duration, tipo: TokenType, id: String) -> String {
     let now = Utc::now();
     let secret = match tipo {
         TokenType::Refresh => env::var("REFRESH_SECRET").unwrap(),
@@ -82,10 +67,7 @@ fn get_token(
     .unwrap()
 }
 
-fn validate_token(
-    token: String,
-    tipo: TokenType,
-) -> Result<Claims, AppError> {
+fn validate_token(token: String, tipo: TokenType) -> Result<Claims, AppError> {
     let secret = match tipo {
         TokenType::Refresh => env::var("REFRESH_SECRET").unwrap(),
         TokenType::Normal => env::var("SECRET").unwrap(),

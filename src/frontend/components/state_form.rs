@@ -1,26 +1,72 @@
+use std::collections::HashMap;
+use crate::entities::{Bautismo, Estado};
+use crate::frontend::{lib::log, structs::Auth, components::servicio_forms::ServicioForms};
 use std::str::FromStr;
 use sycamore::prelude::*;
-use crate::entities::{Bautismo, Estado};
-use crate::frontend::{structs::Auth, lib::log};
 
 #[component(inline_props)]
-pub fn StateForm(auth: Signal<Auth>, estado: Signal<Estado>) -> View {
-    log("StateForm",8,&estado.get_clone());
-    let conversion = create_signal(String::new());
+pub fn StateForm(auth: Signal<Auth>,estado_numerado: Signal<u8>, estado_connector: Signal<Estado>) -> View {
+    log("StateForm", 8, &estado_numerado.get());
+    log("StateForm", 9, &estado_connector.get_clone());
 
-    view!{
-        (match estado.get_clone() {
-            Estado::Visitante => view!{},
-            Estado::Nuevo => view!{},
-            Estado::Fundamentos {conversion, bautismo} | Estado::PreMiembro {conversion, bautismo} => view!{},
-            Estado::Miembro {conversion, bautismo, servicio} => view!{},
-            Estado::Diacono {conversion, bautismo, servicio} => view!{},
-            Estado::Anciano {conversion, bautismo, servicio, tipo} => view!{},
+    let conversion = create_signal(match estado_connector.get_clone(){
+        Estado::Miembro {conversion,..}
+        | Estado::Diacono {conversion,..}
+        | Estado::Presbitero {conversion,..}
+        | Estado::PreMiembro {conversion,..}
+        | Estado::Fundamentos {conversion,..} => conversion.to_string(),
+        _ => String::new(),
+    });
+    let iglesia_bautismo = create_signal(String::new());
+    let fecha_bautismo = create_signal(String::new());
+    let profesion_de_fe = create_signal(String::new());
+    let servicios = create_signal(match estado_connector.get_clone(){
+        Estado::Miembro {servicio,..}
+            | Estado::Diacono {servicio,..}
+        |Estado::Presbitero {servicio,..} => servicio,
+        _ => vec![],
+    });
+    let tipo_presbitero = create_signal(String::new());
+
+    view! {
+        (match estado_numerado.get() > 2 {
+            true => view!{
+                div(){
+                    label(r#for="tipo_presbitero"){"Tipo de Presbítero"}
+                    select(name="tipo_presbitero", bind:value=tipo_presbitero){
+                        option(value="Governante"){"Governante"}
+                        option(value="Maestro"){"Maestro"}
+                    }
+                }
+            },
+            false => view!{},
         })
-        div(){
-            label(r#for="conversion"){"Fecha de Conversion: "}
-            input(r#type="date", name="conversion", bind:value=conversion)
-        }
+        (match estado_numerado.get() > 0{
+            true => view!{
+                div(){
+                    label(r#for="conversion"){"Fecha de Conversión: "}
+                    input(r#type="date", name="conversion",bind:value=conversion){}
+                }
+                div(){
+                    label(r#for="iglesia_bautismo"){"Iglesia de Bautismo: "}
+                    input(name="iglesia_bautismo", bind:value=iglesia_bautismo){}
+                }
+                div(){
+                    label(r#for="fecha_bautismo"){"Fecha de Bautismo: "}
+                    input(r#type="date",name="fecha_bautismo", bind:value=fecha_bautismo){}
+                }
+                div(){
+                    label(r#for="profesion_de_fe"){"Profesión de Fe: "}
+                    input(name="profesion_de_fe", bind:value=profesion_de_fe){}
+                }
+
+            },
+            false => view!{},
+        })
+        (match estado_numerado.get() > 1 {
+            true => view!{ServicioForms(servicios = servicios)},
+            false => view!{},
+        })
     }
 }
 /*
@@ -44,8 +90,8 @@ pub fn StateForm(auth: Signal<Auth>, estado: Signal<Estado>) -> View {
         bautismo: Bautismo,
         servicio: Vec<Servicio>,
     },
-    Anciano {
-        tipo: TipoAnciano,
+    Persbitero {
+        tipo: TipoPresbitero,
         conversion: NaiveDate,
         bautismo: Bautismo,
         servicio: Vec<Servicio>,

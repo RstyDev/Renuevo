@@ -6,9 +6,9 @@ use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 use sycamore::prelude::Signal;
 // use lazy_static::lazy_static;
+use chrono::{DateTime, Datelike, Utc};
 use serde::Serialize;
 use std::sync::LazyLock;
-use chrono::{DateTime, Datelike, Utc};
 use sycamore::prelude::*;
 
 pub static HOST: LazyLock<String> = LazyLock::new(|| std::env!("BACKEND").to_string());
@@ -44,7 +44,12 @@ async fn fetch<T: DeserializeOwned>(
 }
 
 pub fn rfc_7231(date: DateTime<Utc>) -> String {
-    format!("{}, {} {} GMT",date.weekday().to_string().split_at(3).0,date.format("%d-%b-%Y"),date.format("%H:%M:%S"))
+    format!(
+        "{}, {} {} GMT",
+        date.weekday().to_string().split_at(3).0,
+        date.format("%d-%b-%Y"),
+        date.format("%H:%M:%S")
+    )
 }
 pub async fn request<T: DeserializeOwned>(
     url: impl AsRef<str>,

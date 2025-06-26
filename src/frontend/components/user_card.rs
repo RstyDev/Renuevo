@@ -7,7 +7,7 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
     let (us1, us2) = (user.clone(), user.clone());
 
     let servicio_selector = create_selector(move || match us2.estado() {
-        Estado::Anciano { servicio, .. }
+        Estado::Presbitero { servicio, .. }
         | Estado::Diacono { servicio, .. }
         | Estado::Miembro { servicio, .. } => {
             let mut servicios = String::from(&servicio[0].area().to_string());

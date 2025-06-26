@@ -9,13 +9,14 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 use std::env;
 
 pub fn root_routes(config: &mut web::ServiceConfig) {
-    let auth = HttpAuthentication::with_fn(move |a, b: Option<BearerAuth>| {
-        validator(a, b)
-    });
-    let cors = Cors::default()
-        .allowed_origin(&env::var("ORIGIN").unwrap());
-    let cors = match &env::var("ORIGIN_SECOND"){
-        Ok(var) => cors.allowed_origin(var).allow_any_method().allow_any_header().max_age(None),
+    let auth = HttpAuthentication::with_fn(move |a, b: Option<BearerAuth>| validator(a, b));
+    let cors = Cors::default().allowed_origin(&env::var("ORIGIN").unwrap());
+    let cors = match &env::var("ORIGIN_SECOND") {
+        Ok(var) => cors
+            .allowed_origin(var)
+            .allow_any_method()
+            .allow_any_header()
+            .max_age(None),
         Err(_) => cors.allow_any_method().allow_any_header().max_age(None),
     };
 

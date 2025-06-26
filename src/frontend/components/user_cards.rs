@@ -1,24 +1,36 @@
+use crate::entities::Persona;
+use crate::frontend::{
+    components::user_card::{ActionOnUser, Mode, UserCard},
+    lib::request,
+    structs::Auth,
+};
 use async_std::task::block_on;
 use reqwest::Method;
 use sycamore::prelude::*;
-use crate::entities::Persona;
-use crate::frontend::{components::user_card::{Mode, ActionOnUser, UserCard},structs::Auth, lib::request};
 
-pub async fn refresh_users(miembros: Signal<Option<Vec<Persona>>>, auth: Signal<crate::frontend::structs::Auth>) {
+pub async fn refresh_users(
+    miembros: Signal<Option<Vec<Persona>>>,
+    auth: Signal<crate::frontend::structs::Auth>,
+) {
     miembros.set(
-        crate::frontend::lib::request::<Vec<Persona>>("api/v1/users/", auth, Method::GET, None::<bool>)
-            .await
-            .unwrap(),
+        crate::frontend::lib::request::<Vec<Persona>>(
+            "api/v1/users/",
+            auth,
+            Method::GET,
+            None::<bool>,
+        )
+        .await
+        .unwrap(),
     );
 }
 #[component(inline_props)]
-pub fn UserCards(auth:Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>, mode: Mode) -> View {
+pub fn UserCards(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>, mode: Mode) -> View {
     let m1 = miembros.clone();
 
     block_on(async move {
         refresh_users(miembros, auth.clone()).await;
     });
-    view!{
+    view! {
         (match miembros.get_clone() {
             Some(miembros) => {
                 let iter = miembros.into_iter().map(|m|{

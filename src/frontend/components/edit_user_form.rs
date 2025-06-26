@@ -1,8 +1,11 @@
-use crate::entities::{Estado, Persona, Sexo, Bautismo};
-use crate::frontend::components::{user_card::{ActionOnUser, Mode}, user_cards::UserCards, state_form::StateForm};
+use crate::entities::{Bautismo, Estado, Persona, Sexo};
+use crate::frontend::components::{
+    state_form::StateForm,
+    user_card::{ActionOnUser, Mode},
+    user_cards::UserCards,
+};
 use crate::frontend::{lib::log, structs::Auth};
 use sycamore::prelude::*;
-
 
 #[component(inline_props)]
 pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
@@ -15,41 +18,40 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
     let fecha_bautismo = create_signal(String::new());
     let bautismo = create_signal(Bautismo::default());
     let iglesia_bautismo = create_signal(String::new());
-    let form_selector = create_selector(move ||form.get_clone());
+    let form_selector = create_selector(move || form.get_clone());
     // let servicio = create_signal(Vec::new());
-    let opciones_estado = create_signal(
-        Estado::Visitante
-    );
-
-
-    create_memo(move || {
-        match act2.get_clone() {
-            ActionOnUser::Edit(persona) => {
-                form.set(Some(persona.to_owned()));
-                act2.set_silent(ActionOnUser::None)
-            },
-            _=>(),
+    let opciones_estado = create_signal(0);
+    let estado_connector = create_signal(Estado::Visitante);
+    create_memo(move || match act2.get_clone() {
+        ActionOnUser::Edit(persona) => {
+            form.set(Some(persona.to_owned()));
+            act2.set_silent(ActionOnUser::None)
         }
+        _ => (),
     });
     // create_effect(move || {
     //     log("Edit ",36,&estado_selector.get_clone());
     // });
-    create_effect(move|| {
-        log("Edit User Form",24,&form.get_clone());
+    create_effect(move || {
+        log("Edit User Form", 24, &form.get_clone());
         match form.get_clone() {
             Some(user) => {
-                opciones_estado.set(user.estado().clone());
+                opciones_estado.set(match user.estado(){
+                    Estado::Visitante | Estado::Nuevo => 0,
+                    Estado::Fundamentos {..} | Estado::PreMiembro {..} => 1,
+                    Estado::Miembro {..} | Estado::Diacono {..} => 2,
+                    Estado::Presbitero {..} => 3
+                });
+                estado_connector.set(user.estado().clone());
                 estado.set(user.estado().to_plain_string().to_string());
                 estado_civil.set(user.estado_civil().to_string());
-                log("Edit User Form",41,&user.estado().to_plain_string());
-            },
+                log("Edit User Form", 41, &user.estado().to_plain_string());
+            }
             None => (),
         }
     });
 
-
     let mode = Mode::Edit(action.clone());
-
 
     view! {
         (match form_selector.get_clone(){
@@ -125,22 +127,22 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
                                             option(value = "PreMiembro"){"Pre Miembro"}
                                             option(value = "Miembro"){"Miembro"}
                                             option(value = "Diacono"){"Diácono"}
-                                            option(value = "Anciano"){"Anciano"}
+                                            option(value = "Presbitero"){"Presbítero"}
                                         },
                                     },
-                                    Estado::Diacono {..} | Estado::Anciano {..} => view!{
+                                    Estado::Diacono {..} | Estado::Presbitero {..} => view!{
                                         option(value = "Visitante"){"Visitante"}
                                         option(value = "Nuevo"){"Nuevo"}
                                         option(value = "Fundamentos"){"Fundamentos"}
                                         option(value = "PreMiembro"){"Pre Miembro"}
                                         option(value = "Miembro"){"Miembro"}
                                         option(value = "Diacono"){"Diácono"}
-                                        option(value = "Anciano"){"Anciano"}
+                                        option(value = "Presbitero"){"Presbítero"}
                                     }
                                 })
                             }
                         }
-                        StateForm(auth = auth.clone(), estado = opciones_estado)
+                        StateForm(auth = auth.clone(), estado_numerado = opciones_estado, estado_connector = estado_connector)
                         //aca se sigue
                     }
                 }
@@ -171,8 +173,8 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
         bautismo: Bautismo,
         servicio: Vec<Servicio>,
     },
-    Anciano {
-        tipo: TipoAnciano,
+    Presbitero {
+        tipo: TipoPresbitero,
         conversion: NaiveDate,
         bautismo: Bautismo,
         servicio: Vec<Servicio>,

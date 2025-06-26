@@ -117,8 +117,6 @@ impl Persona {
             registrado: persona.registrado(),
         }
     }
-
-
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
@@ -131,7 +129,7 @@ pub enum EstadoCivil {
 
 impl ToString for EstadoCivil {
     fn to_string(&self) -> String {
-        String::from(match self{
+        String::from(match self {
             EstadoCivil::Soltero => "Soltero",
             EstadoCivil::Casado => "Casado",
             EstadoCivil::Viudo => "Viudo",
@@ -140,7 +138,7 @@ impl ToString for EstadoCivil {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
-pub enum TipoAnciano {
+pub enum TipoPresbitero {
     Governante,
     Maestro,
 }
@@ -168,8 +166,8 @@ pub enum Estado {
         bautismo: Bautismo,
         servicio: Vec<Servicio>,
     },
-    Anciano {
-        tipo: TipoAnciano,
+    Presbitero {
+        tipo: TipoPresbitero,
         conversion: NaiveDate,
         bautismo: Bautismo,
         servicio: Vec<Servicio>,
@@ -185,7 +183,7 @@ impl Estado {
             Estado::PreMiembro { .. } => "Pre Miembro",
             Estado::Miembro { .. } => "Miembro",
             Estado::Diacono { .. } => "Diácono",
-            Estado::Anciano { .. } => "Anciano",
+            Estado::Presbitero { .. } => "Presbítero",
         }
     }
 }
@@ -193,12 +191,12 @@ impl Estado {
 pub enum Sexo {
     #[default]
     Masculino,
-    Femenino
+    Femenino,
 }
 
 impl ToString for Sexo {
     fn to_string(&self) -> String {
-        String::from(match self{
+        String::from(match self {
             Sexo::Masculino => "Masculino",
             Sexo::Femenino => "Femenino",
         })

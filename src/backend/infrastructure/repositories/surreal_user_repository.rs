@@ -26,8 +26,6 @@ impl SurrealUserRepository {
 }
 
 impl UserRepository for Arc<SurrealUserRepository> {
-
-
     async fn save(&self, user: &Persona) -> AppRes<()> {
         if user.password().unwrap().len() < 6 {
             return Err(AppError::ValidationErr(

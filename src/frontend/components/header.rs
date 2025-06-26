@@ -23,7 +23,7 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
                 Estado::PreMiembro { .. } => None,
                 Estado::Miembro { servicio, .. } => Some(servicio.to_owned()),
                 Estado::Diacono { servicio, .. } => Some(servicio.to_owned()),
-                Estado::Anciano { servicio, .. } => Some(servicio.to_owned()),
+                Estado::Presbitero { servicio, .. } => Some(servicio.to_owned()),
             })
             .flatten()
     });

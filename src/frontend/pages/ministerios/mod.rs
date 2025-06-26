@@ -1,5 +1,5 @@
 mod alabanza;
-mod ancianato;
+mod presbiterado;
 mod bienvenida;
 mod letras;
 mod misericordia;
@@ -9,7 +9,7 @@ mod sonido;
 mod tesoro;
 
 pub use alabanza::*;
-pub use ancianato::*;
+pub use presbiterado::*;
 pub use bienvenida::*;
 pub use letras::*;
 pub use misericordia::*;

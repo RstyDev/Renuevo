@@ -1,10 +1,6 @@
 use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
 use crate::frontend::{
-    components::{
-        delete_user_form::refresh_users,
-        user_card::Mode,
-        user_cards::UserCards,
-    },
+    components::{delete_user_form::refresh_users, user_card::Mode, user_cards::UserCards},
     lib::{log, request},
     structs::Auth,
 };
@@ -23,9 +19,7 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -
     let nombre = create_signal(String::new());
     let apellido = create_signal(String::new());
     let sexo = create_signal(String::new());
-    create_effect(move || {
-        log("Add",28,&sexo.get_clone())
-    });
+    create_effect(move || log("Add", 28, &sexo.get_clone()));
     let estado_civil = create_signal(String::new());
     let nacimiento = create_signal(String::new());
     let submit_fn = move |ev: SubmitEvent| {
@@ -37,7 +31,7 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -
             Some(String::from("123456")),
             nombre.get_clone(),
             apellido.get_clone(),
-            match sexo.get_clone().as_str(){
+            match sexo.get_clone().as_str() {
                 "Masculino" => Sexo::Masculino,
                 "Femenino" => Sexo::Femenino,
                 _ => panic!("Not possible"),
