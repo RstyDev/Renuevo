@@ -2,7 +2,9 @@
 use crate::backend::infrastructure::db::models::families::FamiliaDB;
 use crate::entities::Persona;
 use crate::error::{AppError, AppRes};
+use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub struct Familia {
     id: Option<String>,
     apellido: String,

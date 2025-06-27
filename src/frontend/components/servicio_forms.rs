@@ -1,47 +1,54 @@
+use crate::{
+    entities::{Ministerio, Servicio},
+    frontend::lib::log,
+};
 use std::collections::HashMap;
 use sycamore::prelude::*;
-use crate::{entities::{Servicio, Ministerio}, frontend::lib::log};
+use web_sys::MouseEvent;
 
 #[component(inline_props)]
-pub fn ServicioForms(servicios: Signal<Vec<Servicio>>) -> View {
-    let servicios_signal = create_signal(HashMap::<String,bool>::new());
-
-    let servicio = create_signal(String::new());
-    let lead = create_signal(false);
+pub fn ServicioForms(
+    servicios: Signal<Vec<Servicio>>,
+    servicios_map: Signal<HashMap<String, String>>,
+) -> View {
     let new_serv_area = create_signal(String::new());
     let new_lead = create_signal(String::new());
-    // let update_leader = move |area:Signal<String>,checked:Signal<String>|{
-    //     servicios.set_fn(|servicios|{
-    //         let mut servicios = servicios.clone();
-    //         let i = servicios.iter().enumerate().find_map(|(i,servicio)|match (servicio.area(),area.get_clone().as_str()){
-    //             (Ministerio::Sonido, "Sonido") => Some(i),
-    //             (Ministerio::Palabra, "Palabra") => Some(i),
-    //             (Ministerio::Tesoro, "Tesoro") => Some(i),
-    //             (Ministerio::Bienvenida, "Bienvenida") => Some(i),
-    //             (Ministerio::Misericordia, "Misericordia") => Some(i),
-    //             (Ministerio::Alabanza, "Alabanza") => Some(i),
-    //             (Ministerio::Letras, "Letras") => Some(i),
-    //             (Ministerio::Presbiterado, "Presbiterado") => Some(i),
-    //             (Ministerio::Redes, "Redes") => Some(i),
-    //             _ => None,
-    //         }).unwrap();
-    //         let mut servicio = servicios.remove(i);
-    //         servicio.set_leader(checked.get_clone().parse<bool>());
-    //         servicios.insert(i,servicio);
-    //         servicios
-    //     });
-    //
-    // };
+    let (map,map2) = (servicios_map.clone(),servicios_map.clone());
+    let update_leader = move |area: String, checked: String| {
+        servicios_map.set_fn(|map| {
+            let mut map = map.clone();
+            map.insert(area.to_owned(), checked.to_owned());
+            map
+        })
+    };
 
+    let opciones_servicio = create_signal({
+        let map = map2.get_clone();
+        vec![
+            "Sonido",
+            "Tesoro",
+            "Letras",
+            "Bienvenida",
+            "Redes",
+            "Alabanza",
+            "Misericordia",
+            "Palabra",
+            "Presbiterado",
+        ]
+        .into_iter()
+        .filter(move |opt| (!map.contains_key(*opt)))
+        .collect::<Vec<&str>>()
+    });
+    let opciones_servicio_selector = create_selector(move ||opciones_servicio.with(|opts|opts.len()>0));
 
-
-    view!{
+    view! {
         section(id="servicio_forms"){
             Keyed(
                 list = servicios,
-                view=|serv|{
+                view=move |serv|{
                     // let area = serv.area().to_string();
-                    let (serv1,serv2) = (serv.clone(),serv.clone());
+                    let (serv1,serv2,serv3,serv4) = (serv.clone(),serv.clone(),serv.clone(),serv.clone());
+
                     let checked = create_signal(serv.leader().to_string());
                     create_effect(move ||{log("Servicio Forms",21,&checked.get_clone())});
                     view!{
@@ -51,35 +58,63 @@ pub fn ServicioForms(servicios: Signal<Vec<Servicio>>) -> View {
                                 option(value=serv1.area().to_string()){(serv2.area().to_string())}
                             }
                             select(name="leader", bind:value=checked, on:change=move |_|{
-                                log("ServicioForms",29,&checked.get_clone());
+                                update_leader(serv3.area().to_string(),checked.get_clone())
                             }){
                                 option(value="true"){"Leader"}
                                 option(value="false"){"No Leader"}
                             }
-                            button(){"Quitar Servicio"}
+                            button(on:click=move|ev:MouseEvent|{
+                                ev.prevent_default();
+                                map.set_fn(|map|{
+                                    let mut map = map.clone();
+                                    map.remove(&serv4.area().to_string());
+                                    map
+                                });
+                            }){"Quitar Servicio"}
                         }
                     }
                 },
                 key=|serv|serv.area().to_string(),
             )
-            article(){
-                label(r#for="area_servicio"){"Area de Servicio: "}
-                select(name="area_servicio", bind:value=new_serv_area){
-                    option(value="Sonido"){"Sonido"}
-                    option(value="Tesoro"){"Tesoro"}
-                    option(value="Letras"){"Letras"}
-                    option(value="Bienvenida"){"Bienvenida"}
-                    option(value="Redes"){"Redes"}
-                    option(value="Alabanza"){"Alabanza"}
-                    option(value="Misericordia"){"Misericordia"}
-                    option(value="Palabra"){"Palabra"}
-                    option(value="Presbiterado"){"Presbiterado"}
-                }
-
-                label(r#for="leader"){"Leader: "}
-                input(r#type="checkbox",name="leader", bind:value=new_lead)
-                button(){"Agregar Servicio"}
-            }
+            (match opciones_servicio_selector.get(){
+                true=>view!{
+                    article(){
+                        label(r#for="area_servicio"){"Area de Servicio: "}
+                        select(name="area_servicio", bind:value=new_serv_area){
+                            Keyed(
+                                list=opciones_servicio,
+                                view=|opt|view!{
+                                    option(value=opt.to_owned()){(opt.to_owned())}
+                                },
+                                key=|opt|opt.to_owned()
+                            )
+                        }
+                        label(r#for="leader"){"Leader: "}
+                        select(name="leader", bind:value=new_lead){
+                            option(value="true"){"Leader"}
+                            option(value="false"){"No Leader"}
+                        }
+                        button(on:click=move|ev:MouseEvent|{
+                            ev.prevent_default();
+                            let area = new_serv_area.get_clone();
+                            if area.len()>0 {
+                                update_leader(new_serv_area.get_clone(),new_lead.get_clone());
+                                opciones_servicio.set_fn(|opts|{
+                                    let mut opts = opts.clone();
+                                    if let Some(i) = opts.iter().enumerate().find_map(|(i,&opt)|{
+                                        opt.eq(&new_serv_area.get_clone()).then_some(i)
+                                    }){
+                                        opts.remove(i);
+                                    }
+                                    opts
+                                });
+                                new_serv_area.set(String::new())
+                            }
+                        }){"Agregar Servicio"}
+                    }
+                },
+                false=>view!{}
+            })
         }
     }
 }

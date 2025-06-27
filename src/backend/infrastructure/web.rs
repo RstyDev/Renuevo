@@ -10,10 +10,7 @@ use actix_web::web::Data;
 use actix_web::{App, HttpServer};
 use dotenv::dotenv;
 use std::env;
-use std::env::VarError;
-use std::sync::Arc;
 use surrealdb::opt::IntoQuery;
-use crate::backend::infrastructure::prefill::prefill;
 
 pub async fn run() -> std::io::Result<()> {
     println!("{:#?}", dotenv().ok());
@@ -23,8 +20,6 @@ pub async fn run() -> std::io::Result<()> {
     let app_data = Data::new(repo);
     let db = establish_connection().await;
     println!("Starting...");
-
-
 
     let app = HttpServer::new(move || {
         let cors = Cors::default().allowed_origin(&env::var("ORIGIN").unwrap());

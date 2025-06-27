@@ -1,10 +1,12 @@
-use std::sync::Arc;
-use chrono::Local;
 use crate::backend::application::use_cases::users::register_user::RegisterUserUseCase;
 use crate::backend::infrastructure::repositories::surreal_user_repository::SurrealUserRepository;
-use crate::entities::{Estado, Persona, Sexo, EstadoCivil, Servicio, Ministerio, Bautismo, TipoPresbitero};
+use crate::entities::{
+    Bautismo, Estado, EstadoCivil, Ministerio, Persona, Servicio, Sexo, TipoPresbitero,
+};
+use chrono::Local;
+use std::sync::Arc;
 
-pub async fn prefill(repo: Arc<SurrealUserRepository>){
+pub async fn prefill(repo: Arc<SurrealUserRepository>) {
     let mut personas = vec![];
     personas.push(Persona::new(
         None,
@@ -16,8 +18,15 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>){
         EstadoCivil::Casado,
         Estado::Miembro {
             conversion: Local::now().date_naive(),
-            servicio: vec![Servicio::new(true,Ministerio::Tesoro),Servicio::new(false,Ministerio::Sonido)],
-            bautismo: Bautismo::new(Local::now().date_naive(),Some(Local::now().date_naive()),String::from("Vida Sobrenatural"))
+            servicio: vec![
+                Servicio::new(true, Ministerio::Tesoro),
+                Servicio::new(false, Ministerio::Sonido),
+            ],
+            bautismo: Bautismo::new(
+                Local::now().date_naive(),
+                Some(Local::now().date_naive()),
+                String::from("Vida Sobrenatural"),
+            ),
         },
         Local::now().naive_local().date(),
     ));
@@ -31,9 +40,16 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>){
         EstadoCivil::Casado,
         Estado::Presbitero {
             conversion: Local::now().date_naive(),
-            servicio: vec![Servicio::new(true,Ministerio::Palabra),Servicio::new(false,Ministerio::Presbiterado)],
-            bautismo: Bautismo::new(Local::now().date_naive(),Some(Local::now().date_naive()),String::from("Pentecostal de Misiones")),
-            tipo: TipoPresbitero::Maestro
+            servicio: vec![
+                Servicio::new(true, Ministerio::Palabra),
+                Servicio::new(false, Ministerio::Presbiterado),
+            ],
+            bautismo: Bautismo::new(
+                Local::now().date_naive(),
+                Some(Local::now().date_naive()),
+                String::from("Pentecostal de Misiones"),
+            ),
+            tipo: TipoPresbitero::Maestro,
         },
         Local::now().naive_local().date(),
     ));
@@ -47,8 +63,12 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>){
         EstadoCivil::Casado,
         Estado::Miembro {
             conversion: Local::now().date_naive(),
-            servicio: vec![Servicio::new(false,Ministerio::Bienvenida)],
-            bautismo: Bautismo::new(Local::now().date_naive(),Some(Local::now().date_naive()),String::from("Iglesia Reformada Renuevo")),
+            servicio: vec![Servicio::new(false, Ministerio::Bienvenida)],
+            bautismo: Bautismo::new(
+                Local::now().date_naive(),
+                Some(Local::now().date_naive()),
+                String::from("Iglesia Reformada Renuevo"),
+            ),
         },
         Local::now().naive_local().date(),
     ));
@@ -77,10 +97,9 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>){
         Estado::Nuevo,
         Local::now().naive_local().date(),
     ));
-    let use_case= RegisterUserUseCase::new(repo);
-
+    let use_case = RegisterUserUseCase::new(repo);
 
     for persona in personas {
-        use_case.execute(persona).await;
+        use_case.execute(persona).await.unwrap();
     }
 }

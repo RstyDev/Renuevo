@@ -38,9 +38,13 @@ impl Servicio {
     pub fn new(leader: bool, area: Ministerio) -> Self {
         Self { leader, area }
     }
-    pub fn leader(&self) -> bool {self.leader}
+    pub fn leader(&self) -> bool {
+        self.leader
+    }
 
-    pub fn set_leader(&mut self, leader: bool) {self.leader = leader}
+    pub fn set_leader(&mut self, leader: bool) {
+        self.leader = leader
+    }
     pub fn area(&self) -> &Ministerio {
         &self.area
     }

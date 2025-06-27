@@ -8,8 +8,6 @@ pub mod frontend;
 
 #[cfg(feature = "ssr")]
 use crate::backend::infrastructure::web::run;
-#[cfg(feature = "ssr")]
-use chrono::TimeZone;
 
 #[cfg(feature = "ssr")]
 #[actix_web::main]

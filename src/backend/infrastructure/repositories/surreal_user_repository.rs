@@ -9,7 +9,6 @@ use crate::{
     entities::Persona,
     error::{AppError, AppRes},
 };
-use std::collections::HashMap;
 use std::sync::Arc;
 
 #[derive(Clone)]

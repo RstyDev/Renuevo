@@ -36,11 +36,11 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
         log("Edit User Form", 24, &form.get_clone());
         match form.get_clone() {
             Some(user) => {
-                opciones_estado.set(match user.estado(){
+                opciones_estado.set(match user.estado() {
                     Estado::Visitante | Estado::Nuevo => 0,
-                    Estado::Fundamentos {..} | Estado::PreMiembro {..} => 1,
-                    Estado::Miembro {..} | Estado::Diacono {..} => 2,
-                    Estado::Presbitero {..} => 3
+                    Estado::Fundamentos { .. } | Estado::PreMiembro { .. } => 1,
+                    Estado::Miembro { .. } | Estado::Diacono { .. } => 2,
+                    Estado::Presbitero { .. } => 3,
                 });
                 estado_connector.set(user.estado().clone());
                 estado.set(user.estado().to_plain_string().to_string());

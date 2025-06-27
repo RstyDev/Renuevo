@@ -25,6 +25,12 @@ impl SurrealFamilyRepository {
 
 impl FamilyRepository for Arc<SurrealFamilyRepository> {
     async fn save(&self, familia: &Familia) -> AppRes<()> {
+        let _familia: Vec<FamiliaDB> = self
+            .pool
+            .insert("familias")
+            .content(familia.to_owned().to_db()?)
+            .await
+            .map_err(|e| AppError::DBErr(28, e.to_string()))?;
         // let res = self
         //     .pool
         //     .query(
