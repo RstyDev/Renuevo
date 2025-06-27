@@ -173,7 +173,6 @@ pub enum Estado {
         servicio: Vec<Servicio>,
     },
 }
-
 impl Estado {
     pub fn to_plain_string(&self) -> &str {
         match self {
@@ -184,6 +183,41 @@ impl Estado {
             Estado::Miembro { .. } => "Miembro",
             Estado::Diacono { .. } => "Diácono",
             Estado::Presbitero { .. } => "Presbítero",
+        }
+    }
+    pub fn get_bautismo(&self) -> Option<&Bautismo> {
+        match self {
+            Estado::Fundamentos { bautismo,.. }|
+            Estado::PreMiembro { bautismo,.. } => bautismo.as_ref(),
+            Estado::Miembro { bautismo,.. } |
+            Estado::Diacono { bautismo,.. } |
+            Estado::Presbitero { bautismo,.. } => Some(bautismo),
+            _ => return None,
+        }
+    }
+
+    pub fn get_tipo_presbitero(&self) -> Option<&TipoPresbitero> {
+        match self {
+            Estado::Presbitero { tipo,.. } => Some(tipo),
+            _ => None,
+        }
+    }
+    pub fn get_conversion(&self) -> Option<&NaiveDate> {
+        match self {
+            Estado::Fundamentos { conversion,.. } |
+            Estado::PreMiembro { conversion,.. } |
+            Estado::Miembro { conversion,.. } |
+            Estado::Diacono { conversion,.. } |
+            Estado::Presbitero { conversion,.. } => Some(conversion),
+            _ => None
+        }
+    }
+    pub fn get_servicio(&self) -> Option<&Vec<Servicio>> {
+        match self {
+            Estado::Miembro {servicio,..} |
+            Estado::Diacono {servicio,..} |
+            Estado::Presbitero {servicio,..}=> Some(servicio),
+            _=>None,
         }
     }
 }
@@ -200,5 +234,14 @@ impl ToString for Sexo {
             Sexo::Masculino => "Masculino",
             Sexo::Femenino => "Femenino",
         })
+    }
+}
+
+impl ToString for TipoPresbitero {
+    fn to_string(&self) -> String {
+        match self {
+            Self::Governante => String::from("Governante"),
+            Self::Maestro => String::from("Maestro"),
+        }
     }
 }

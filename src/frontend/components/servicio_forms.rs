@@ -13,7 +13,7 @@ pub fn ServicioForms(
 ) -> View {
     let new_serv_area = create_signal(String::new());
     let new_lead = create_signal(String::new());
-    let (map,map2) = (servicios_map.clone(),servicios_map.clone());
+    let (map, map2) = (servicios_map.clone(), servicios_map.clone());
     let update_leader = move |area: String, checked: String| {
         servicios_map.set_fn(|map| {
             let mut map = map.clone();
@@ -39,7 +39,8 @@ pub fn ServicioForms(
         .filter(move |opt| (!map.contains_key(*opt)))
         .collect::<Vec<&str>>()
     });
-    let opciones_servicio_selector = create_selector(move ||opciones_servicio.with(|opts|opts.len()>0));
+    let opciones_servicio_selector =
+        create_selector(move || opciones_servicio.with(|opts| opts.len() > 0));
 
     view! {
         section(id="servicio_forms"){

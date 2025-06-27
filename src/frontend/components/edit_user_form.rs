@@ -29,6 +29,7 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
         }
         _ => (),
     });
+
     // create_effect(move || {
     //     log("Edit ",36,&estado_selector.get_clone());
     // });
@@ -90,7 +91,7 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
                         div(){
                             label(r#for="estado"){"Estado: "}
                             select(name = "estado", bind:value = estado) {
-                                (match u4.estado(){
+                                (match u4.estado(){     //TODO! FALTA VER ACA
                                     Estado::Visitante => view!{
                                         option(value = "Visitante"){"Visitante"}
                                         option(value = "Nuevo"){"Nuevo"}},
