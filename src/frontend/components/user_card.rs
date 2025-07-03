@@ -10,7 +10,11 @@ pub fn UserCard(user: Persona, mode: Mode, action: Signal<ActionOnUser>) -> View
         Estado::Presbitero { servicio, .. }
         | Estado::Diacono { servicio, .. }
         | Estado::Miembro { servicio, .. } => {
-            let mut servicios = String::from(&servicio[0].area().to_string());
+            let mut servicios = match servicio.len()>0{
+                true => servicio[0].area().to_string(),
+                _ => "".to_string(),
+            };
+            // let mut servicios = String::from(&servicio[0].area().to_string());
             for i in 1..servicio.len() {
                 servicios.push_str(", ");
                 servicios.push_str(servicio[i].area().to_string().as_str());

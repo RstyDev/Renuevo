@@ -16,7 +16,7 @@ impl<T: UserRepository> UpdateUserUseCase<T> {
         UpdateUserUseCase { user_service }
     }
 
-    pub async fn update(&self, persona: Persona) -> AppRes<()> {
+    pub async fn update(&self, persona: Persona) -> AppRes<Persona> {
         self.user_service.update(persona).await
     }
 }

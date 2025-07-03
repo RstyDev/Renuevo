@@ -9,6 +9,7 @@ use async_std::task::block_on;
 use reqwest::{Client, Response, StatusCode};
 use sycamore::prelude::*;
 use web_sys::SubmitEvent;
+const NAME: &'static str = "Login";
 
 #[component(inline_props)]
 pub fn Login(logged: Signal<Auth>, error_message: Signal<String>) -> View {
@@ -25,7 +26,7 @@ pub fn Login(logged: Signal<Auth>, error_message: Signal<String>) -> View {
                     apellido: last_name.get_clone(),
                     password: password.get_clone(),
                 }).send().await.unwrap();
-                log("Login", 25, &res);
+                log(NAME, 25, &res);
                 match res.status(){
                     StatusCode::OK=>{
                         let token = res.json::<LoginResult>().await.unwrap();
@@ -34,7 +35,7 @@ pub fn Login(logged: Signal<Auth>, error_message: Signal<String>) -> View {
                     }
                     _ => {
                         let res = res.json::<String>().await.unwrap();
-                        log("Login", 34, &res);
+                        log(NAME, 34, &res);
                         error_message.set(res)
                     }
                 }

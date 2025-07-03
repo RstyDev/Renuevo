@@ -8,7 +8,7 @@ use crate::frontend::{
 use async_std::task::block_on;
 use reqwest::Method;
 use sycamore::prelude::*;
-
+const NAME: &'static str = "Main Page";
 #[component(inline_props)]
 pub fn MainPage(
     auth: Signal<Auth>,
@@ -19,7 +19,7 @@ pub fn MainPage(
     let tab_selector = create_selector(move || tab.get_clone());
     let auth_selector = create_selector(move || auth.get_clone());
     let r1 = resource.clone();
-    create_memo(move || log("Main Page", 23, &r1.get_clone()));
+    create_memo(move || log(NAME, 23, &r1.get_clone()));
     // let resource_selector = create_selector(move || r1.get_clone());
 
     create_memo(move || match auth.get_clone() {
@@ -34,6 +34,7 @@ pub fn MainPage(
                     auth,
                     Method::GET,
                     None::<bool>,
+                    true,
                 )
                 .await
                 .unwrap(),

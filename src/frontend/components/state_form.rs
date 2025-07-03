@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use sycamore::prelude::*;
 use web_sys::MouseEvent;
+const NAME: &'static str = "State Form";
 
 fn get_all_signals(estado: Signal<Estado>)->(Signal<HashMap<String,String>>,Signal<Vec<Servicio>>,Signal<String>,Signal<String>,Signal<String>,Signal<String>,Signal<String>){
     let estado = estado.get_clone();
@@ -24,15 +25,25 @@ pub fn StateForm(
     auth: Signal<Auth>,
     estado_numerado: Signal<u8>,
     estado_connector: Signal<Estado>,
+    updated_estado: Signal<bool>,
 ) -> View {
-    log("StateForm", 8, &estado_numerado.get());
-    log("StateForm", 9, &estado_connector.get_clone());
+    // log(NAME, 8, &estado_numerado.get());
+    // log(NAME, 9, &estado_connector.get_clone());
 
     let (servicios_map,servicios,conversion,iglesia_bautismo,fecha_bautismo,profesion_de_fe,tipo_presbitero) = get_all_signals(estado_connector);
+    let bautismo_disabled = create_signal(match estado_connector.get_clone(){
+        Estado::Nuevo => false,
+        Estado::Fundamentos { bautismo, ..} | Estado::PreMiembro { bautismo, ..} => match bautismo.map(|b|b.profesion_de_fe()).flatten() {
+            Some(_) => true,
+            None => false,
+        },
+        _ => true,
+    });
 
+    log(NAME,41,&bautismo_disabled.get());
 
     let map = servicios_map.clone();
-    create_memo(move || log("State Form", 14, &map));
+    create_memo(move || log(NAME, 14, &map));
 
     let c1 = conversion.clone();
     let (s1, s2) = (servicios.clone(), servicios.clone());
@@ -61,7 +72,7 @@ pub fn StateForm(
         )
     });
     create_memo(move || {
-        log("StateForm", 22, &estado_connector.get_clone());
+        log(NAME, 22, &estado_connector.get_clone());
         let connector = estado_connector.get_clone();
         s1.set(connector.get_servicio().cloned().unwrap_or_default());
         c1.set(connector.get_conversion().map(|c|c.to_string()).unwrap_or_default());
@@ -71,48 +82,60 @@ pub fn StateForm(
         let fecha = fecha_bautismo.get_clone();
         let profesion = profesion_de_fe.get_clone();
         let iglesia = iglesia_bautismo.get_clone();
-        (fecha.len() > 0).then_some(Bautismo::new(
-            fecha.parse().unwrap(),
-            (profesion.len() > 0).then_some(profesion.parse().unwrap()),
-            iglesia.to_owned(),
-        ))
+        log(NAME,83,&format!("fecha: {}, profesion: {}, iglesia: {}",fecha.len(),profesion.len(),iglesia.len()));
+        match fecha.len()>0{
+            true => Some(Bautismo::new(
+                fecha.parse().unwrap(),
+                match profesion.len()>0{
+                    true => Some(profesion.parse().unwrap()),
+                    false => None,
+                },
+                iglesia.to_owned(),
+            )),
+            false => None,
+        }
     };
     let save_event = move |ev: MouseEvent| {
         ev.prevent_default();
-        estado_connector.set_fn(|old| match old {
-            Estado::Miembro { .. } => Estado::Miembro {
-                servicio: servicios.get_clone(),
-                bautismo: get_bautismo().unwrap(),
-                conversion: conversion.get_clone().parse().unwrap(),
-            },
-            Estado::Diacono { .. } => Estado::Diacono {
-                servicio: servicios.get_clone(),
-                bautismo: get_bautismo().unwrap(),
-                conversion: conversion.get_clone().parse().unwrap(),
-            },
-            Estado::Presbitero { .. } => Estado::Presbitero {
-                tipo: match tipo_presbitero.get_clone().as_str() {
-                    "Maestro" => TipoPresbitero::Maestro,
-                    "Governante" => TipoPresbitero::Governante,
-                    _ => panic!("Not possible"),
+        estado_connector.set(
+            match estado_numerado.get(){
+                0 => Estado::Visitante,
+                1 => Estado::Nuevo,
+                2 => Estado::Fundamentos {
+                    bautismo: get_bautismo(),
+                    conversion: conversion.get_clone().parse().unwrap(),
                 },
-                servicio: servicios.get_clone(),
-                bautismo: get_bautismo().unwrap(),
-                conversion: conversion.get_clone().parse().unwrap(),
-            },
-            Estado::PreMiembro { .. } => Estado::PreMiembro {
-                bautismo: get_bautismo(),
-                conversion: conversion.get_clone().parse().unwrap(),
-            },
-            Estado::Fundamentos { .. } => Estado::PreMiembro {
-                bautismo: get_bautismo(),
-                conversion: conversion.get_clone().parse().unwrap(),
-            },
-            other => other.clone(),
-        });
+                3 => Estado::PreMiembro {
+                    bautismo: get_bautismo(),
+                    conversion: conversion.get_clone().parse().unwrap(),
+                },
+                4 => Estado::Miembro {
+                    servicio: servicios.get_clone(),
+                    bautismo: get_bautismo().unwrap(),
+                    conversion: conversion.get_clone().parse().unwrap(),
+                },
+                5 => Estado::Diacono {
+                    servicio: servicios.get_clone(),
+                    bautismo: get_bautismo().unwrap(),
+                    conversion: conversion.get_clone().parse().unwrap(),
+                },
+                6 => Estado::Presbitero {
+                    tipo: match tipo_presbitero.get_clone().as_str() {
+                        "Maestro" => TipoPresbitero::Maestro,
+                        "Governante" => TipoPresbitero::Governante,
+                        _ => panic!("Not possible"),
+                    },
+                    servicio: servicios.get_clone(),
+                    bautismo: get_bautismo().unwrap(),
+                    conversion: conversion.get_clone().parse().unwrap(),
+                },
+                _=> panic!("Not possible"),
+            }
+        );
+        updated_estado.set(true);
     };
     view! {
-        (match estado_numerado.get() > 2 {
+        (match estado_numerado.get() > 5 {
             true => view!{
                 div(){
                     label(r#for="tipo_presbitero"){"Tipo de Presbítero"}
@@ -124,60 +147,32 @@ pub fn StateForm(
             },
             false => view!{},
         })
-        (match estado_numerado.get() > 0{
+        (match estado_numerado.get() > 1 {
             true => view!{
                 div(){
                     label(r#for="conversion"){"Fecha de Conversión: "}
-                    input(r#type="date", name="conversion",bind:value=conversion){}
+                    input(r#type="date", name="conversion",bind:value=conversion, disabled = bautismo_disabled.get()){}
                 }
                 div(){
                     label(r#for="iglesia_bautismo"){"Iglesia de Bautismo: "}
-                    input(name="iglesia_bautismo", bind:value=iglesia_bautismo){}
+                    input(name="iglesia_bautismo", bind:value=iglesia_bautismo, disabled = bautismo_disabled.get()){}
                 }
                 div(){
                     label(r#for="fecha_bautismo"){"Fecha de Bautismo: "}
-                    input(r#type="date",name="fecha_bautismo", bind:value=fecha_bautismo){}
+                    input(r#type="date",name="fecha_bautismo", bind:value=fecha_bautismo, disabled = bautismo_disabled.get()){}
                 }
                 div(){
                     label(r#for="profesion_de_fe"){"Profesión de Fe: "}
-                    input(name="profesion_de_fe", bind:value=profesion_de_fe){}
+                    input(r#type="date",name="profesion_de_fe", bind:value=profesion_de_fe, disabled = bautismo_disabled.get()){}
                 }
 
             },
             false => view!{},
         })
-        (match estado_numerado.get() > 1 {
+        (match estado_numerado.get() > 3 {
             true => view!{ServicioForms(servicios = servicios, servicios_map = servicios_map)},
             false => view!{},
         })
         button(on:click=save_event){"Guardar"}
     }
 }
-/*
-    Visitante,
-    Nuevo,
-    Fundamentos {
-        conversion: NaiveDate,
-        bautismo: Option<Bautismo>,
-    },
-    PreMiembro {
-        conversion: NaiveDate,
-        bautismo: Option<Bautismo>,
-    },
-    Miembro {
-        conversion: NaiveDate,
-        bautismo: Bautismo,
-        servicio: Vec<Servicio>,
-    },
-    Diacono {
-        conversion: NaiveDate,
-        bautismo: Bautismo,
-        servicio: Vec<Servicio>,
-    },
-    Persbitero {
-        tipo: TipoPresbitero,
-        conversion: NaiveDate,
-        bautismo: Bautismo,
-        servicio: Vec<Servicio>,
-    },
-*/

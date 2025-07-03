@@ -1,7 +1,7 @@
 #[cfg(feature = "ssr")]
 use crate::backend::infrastructure::db::models::users::PersonaDB;
 use crate::entities::{Bautismo, Servicio};
-#[cfg(feature = "ssr")]
+// #[cfg(feature = "ssr")]
 use crate::error::{AppError, AppRes};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
@@ -117,6 +117,21 @@ impl Persona {
             registrado: persona.registrado(),
         }
     }
+
+    #[cfg(feature = "ssr")]
+    pub fn from_db_complete(persona: PersonaDB) -> Self {
+        Self {
+            id: persona.id().as_ref().map(|p| p.id.to_string()),
+            password: Some(persona.password().to_string()),
+            nombre: persona.nombre().to_string(),
+            apellido: persona.apellido().to_string(),
+            sexo: persona.sexo(),
+            nacimiento: persona.nacimiento(),
+            estado_civil: persona.estado_civil().clone(),
+            estado: persona.estado().clone(),
+            registrado: persona.registrado(),
+        }
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
@@ -125,6 +140,7 @@ pub enum EstadoCivil {
     Soltero,
     Casado,
     Viudo,
+    Divorciado
 }
 
 impl ToString for EstadoCivil {
@@ -133,7 +149,20 @@ impl ToString for EstadoCivil {
             EstadoCivil::Soltero => "Soltero",
             EstadoCivil::Casado => "Casado",
             EstadoCivil::Viudo => "Viudo",
+            EstadoCivil::Divorciado => "Divorciado",
         })
+    }
+}
+
+impl EstadoCivil {
+    pub fn from_string(estado: String) -> AppRes<EstadoCivil> {
+        match estado.as_str(){
+            "Soltero" => Ok(EstadoCivil::Soltero),
+            "Casado" => Ok(EstadoCivil::Casado),
+            "Viudo" => Ok(EstadoCivil::Viudo),
+            "Divorciado" => Ok(EstadoCivil::Divorciado),
+            a=> Err(AppError::UnknownState(147,a.to_string())),
+        }
     }
 }
 
@@ -174,16 +203,16 @@ pub enum Estado {
     },
 }
 impl Estado {
-    pub fn to_plain_string(&self) -> &str {
-        match self {
+    pub fn to_plain_string(&self) -> String {
+        String::from(match self {
             Estado::Visitante => "Visitante",
             Estado::Nuevo => "Nuevo",
             Estado::Fundamentos { .. } => "Fundamentos",
-            Estado::PreMiembro { .. } => "Pre Miembro",
+            Estado::PreMiembro { .. } => "PreMiembro",
             Estado::Miembro { .. } => "Miembro",
-            Estado::Diacono { .. } => "Diácono",
-            Estado::Presbitero { .. } => "Presbítero",
-        }
+            Estado::Diacono { .. } => "Diacono",
+            Estado::Presbitero { .. } => "Presbitero",
+        })
     }
     pub fn get_bautismo(&self) -> Option<&Bautismo> {
         match self {

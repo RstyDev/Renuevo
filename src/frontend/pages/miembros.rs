@@ -14,7 +14,7 @@ pub fn Miembros(auth: Signal<Auth>) -> View {
     let m1 = miembros.clone();
     block_on(async move {
         m1.set(
-            request::<Vec<Persona>>("api/v1/users/", auth, Method::GET, None::<bool>)
+            request::<Vec<Persona>>("api/v1/users/", auth, Method::GET, None::<bool>, true)
                 .await
                 .unwrap(),
         );

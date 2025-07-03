@@ -19,4 +19,8 @@ impl<T: UserRepository> GetUserByIdUseCase<T> {
     pub async fn get_by_id(&self, id: &str) -> AppRes<Option<Persona>> {
         self.user_service.get_by_id(id).await
     }
+
+    pub async fn get_by_id_with_password(&self, id: &str) -> AppRes<Option<Persona>> {
+        self.user_service.get_by_id_with_password(id).await
+    }
 }

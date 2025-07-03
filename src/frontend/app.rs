@@ -69,10 +69,10 @@ pub fn App() -> View {
                             StatusCode::OK => r
                                 .json::<RefreshResult>()
                                 .await
-                                .map_err(|e| AppError::HttpErr(13, e.to_string())),
-                            _ => Err(AppError::HttpErr(19, r.json::<String>().await.unwrap())),
+                                .map_err(|e| AppError::HttpErr(72, e.to_string())),
+                            _ => Err(AppError::HttpErr(73, r.json::<String>().await.unwrap())),
                         },
-                        Err(e) => Err(AppError::HttpErr(13, e.to_string())),
+                        Err(e) => Err(AppError::HttpErr(75, e.to_string())),
                     };
                     if let Ok(refresh_result) = res {
                         logged2.set(Auth::Logged(LoginResult {

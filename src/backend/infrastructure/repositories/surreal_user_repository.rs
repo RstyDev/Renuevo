@@ -10,6 +10,7 @@ use crate::{
     error::{AppError, AppRes},
 };
 use std::sync::Arc;
+use crate::entities::{Bautismo, Estado};
 
 #[derive(Clone)]
 pub struct SurrealUserRepository {
@@ -90,18 +91,29 @@ impl UserRepository for Arc<SurrealUserRepository> {
         }
     }
 
-    async fn update(&self, persona: Persona) -> AppRes<()> {
+    async fn get_by_id_with_password(&self, id: &str) -> AppRes<Option<Persona>> {
+        match self
+            .pool
+            .select::<Option<PersonaDB>>(("personas", id))
+            .await
+        {
+            Ok(Some(hermano)) => Ok(Some(Persona::from_db_complete(hermano))),
+            Ok(None) => Ok(None),
+            Err(e) => Err(AppError::DBErr(86, e.to_string())),
+        }
+    }
+
+    async fn update(&self, persona: Persona) -> AppRes<Persona> {
         match persona.id() {
             None => Err(AppError::DBErr(92, "User sent without ID".to_string())),
             Some(id) => {
                 match self
                     .pool
                     .upsert::<Option<PersonaDB>>(("personas", id.clone()))
-                    .content(persona.to_db())
-                    .await
-                {
-                    Ok(_) => Ok(()),
-                    Err(e) => Err(AppError::DBErr(103, e.to_string())),
+                    .content(persona.to_db().unwrap())
+                    .await{
+                    Ok(a) => Ok(Persona::from_db(a.unwrap())),
+                    Err(e) => Err(AppError::DBErr(134, e.to_string())),
                 }
             }
         }

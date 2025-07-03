@@ -1,7 +1,7 @@
 use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
 use crate::frontend::{
-    components::{delete_user_form::refresh_users, user_card::Mode, user_cards::UserCards},
-    lib::{log, request},
+    components::{user_card::Mode, user_cards::UserCards},
+    lib::{log, request, refresh_users},
     structs::Auth,
 };
 use async_std::task::block_on;
@@ -9,6 +9,7 @@ use chrono::{Local, NaiveDate};
 use reqwest::Method;
 use sycamore::prelude::*;
 use web_sys::SubmitEvent;
+const NAME: &'static str = "Add User Form";
 
 #[component(inline_props)]
 pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
@@ -19,13 +20,13 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -
     let nombre = create_signal(String::new());
     let apellido = create_signal(String::new());
     let sexo = create_signal(String::new());
-    create_effect(move || log("Add", 28, &sexo.get_clone()));
+    create_effect(move || log(NAME, 28, &sexo.get_clone()));
     let estado_civil = create_signal(String::new());
     let nacimiento = create_signal(String::new());
     let submit_fn = move |ev: SubmitEvent| {
         ev.prevent_default();
         let birth = nacimiento.get_clone().parse::<NaiveDate>().unwrap();
-        log("Add User Form", 14, &birth);
+        log(NAME, 14, &birth);
         let persona = Persona::new(
             None,
             Some(String::from("123456")),
@@ -37,18 +38,13 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -
                 _ => panic!("Not possible"),
             },
             birth,
-            match estado_civil.get_clone().as_str() {
-                "Soltero" => EstadoCivil::Soltero,
-                "Casado" => EstadoCivil::Casado,
-                "Viudo" => EstadoCivil::Viudo,
-                _ => panic!("Not possible"),
-            },
+            EstadoCivil::from_string(estado_civil.get_clone()).unwrap(),
             Estado::Nuevo,
             Local::now().naive_local().date(),
         );
-        log("Add User Form", 16, &persona);
+        log(NAME, 16, &persona);
         block_on(async move {
-            request::<bool>("api/v1/users/", auth.clone(), Method::POST, Some(persona))
+            request::<bool>("api/v1/users/", auth.clone(), Method::POST, Some(persona), false)
                 .await
                 .unwrap();
             nombre.set(String::new());

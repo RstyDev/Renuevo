@@ -18,6 +18,7 @@ pub async fn refresh_users(
             auth,
             Method::GET,
             None::<bool>,
+            true
         )
         .await
         .unwrap(),
@@ -47,7 +48,8 @@ pub fn UserCards(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>, mod
                                     format!("api/v1/users/{}",m2.id().unwrap()),
                                     auth,
                                     Method::DELETE,
-                                    None::<bool>
+                                    None::<bool>,
+                                    false
                                 )
                                 .await
                                 .unwrap();

@@ -58,7 +58,7 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>) {
         Some(String::from("w98g7sd8")),
         String::from("María José"),
         String::from("Cortés Alarcón"),
-        Sexo::Masculino,
+        Sexo::Femenino,
         Local::now().date_naive(),
         EstadoCivil::Casado,
         Estado::Miembro {
@@ -85,6 +85,22 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>) {
             bautismo: None,
         },
         Local::now().naive_local().date(),
+    ));
+    personas.push(Persona::new(
+        None,Some(String::from("9werg78h")),
+        String::from("Luciano"),
+        String::from("Suarez"),
+        Sexo::Masculino,
+        Local::now().date_naive(),
+        EstadoCivil::Casado,
+        Estado::Diacono {
+            conversion: Local::now().date_naive(),
+            bautismo: Bautismo::new(
+                Default::default(),Some(Default::default()),String::from("Alguna")
+            ),
+            servicio: vec![Servicio::new(true,Ministerio::Bienvenida)],
+        },
+        Default::default()
     ));
     personas.push(Persona::new(
         None,

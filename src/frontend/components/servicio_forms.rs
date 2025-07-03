@@ -5,6 +5,7 @@ use crate::{
 use std::collections::HashMap;
 use sycamore::prelude::*;
 use web_sys::MouseEvent;
+const NAME: &'static str = "Servicio Forms";
 
 #[component(inline_props)]
 pub fn ServicioForms(
@@ -51,7 +52,7 @@ pub fn ServicioForms(
                     let (serv1,serv2,serv3,serv4) = (serv.clone(),serv.clone(),serv.clone(),serv.clone());
 
                     let checked = create_signal(serv.leader().to_string());
-                    create_effect(move ||{log("Servicio Forms",21,&checked.get_clone())});
+                    create_effect(move ||{log(NAME,21,&checked.get_clone())});
                     view!{
                         article(){
                             label(r#for="area_servicio"){"Area de Servicio: "}

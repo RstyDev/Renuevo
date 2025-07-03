@@ -1,17 +1,11 @@
 use crate::entities::Persona;
 use crate::frontend::components::{user_card::Mode, user_cards::UserCards};
-use crate::frontend::{lib::request, structs::Auth};
+use crate::frontend::{lib::{request, refresh_users}, structs::Auth};
 use async_std::task::block_on;
 use reqwest::Method;
 use sycamore::prelude::*;
 
-pub async fn refresh_users(miembros: Signal<Option<Vec<Persona>>>, auth: Signal<Auth>) {
-    miembros.set(
-        request::<Vec<Persona>>("api/v1/users/", auth, Method::GET, None::<bool>)
-            .await
-            .unwrap(),
-    );
-}
+
 #[component(inline_props)]
 pub fn DeleteUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
     let miembros2 = miembros.clone();

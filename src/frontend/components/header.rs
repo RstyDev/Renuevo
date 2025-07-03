@@ -2,6 +2,7 @@ use crate::entities::{Estado, Persona};
 use crate::frontend::lib::log;
 use crate::frontend::structs::{Auth, Tabs};
 use sycamore::prelude::*;
+const NAME: &'static str = "Header";
 
 #[component(inline_props)]
 pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Persona>>) -> View {
@@ -107,7 +108,7 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
                                                     let s2 = s.clone();
                                                     view! {
                                                         li(on:click=move |_|{
-                                                            log("Header",109,&s);
+                                                            log(NAME,109,&s);
                                                             tabs2.set(Tabs::Ministerio(s.area().clone()));
                                                         }){
                                                             a(){(s2.area().to_string())}}}
