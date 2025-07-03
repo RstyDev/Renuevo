@@ -4,7 +4,7 @@ use crate::{
     entities::LoginResult,
     frontend::{
         components::header::Header,
-        lib::{log, rfc_7231, HOST},
+        lib::{rfc_7231, HOST},
         pages::main_page::MainPage,
         structs::{Auth, Tabs},
     },

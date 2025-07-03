@@ -1,8 +1,7 @@
 use crate::entities::Persona;
 use crate::frontend::components::{user_card::Mode, user_cards::UserCards};
-use crate::frontend::{lib::{request, refresh_users}, structs::Auth};
+use crate::frontend::{lib::refresh_users, structs::Auth};
 use async_std::task::block_on;
-use reqwest::Method;
 use sycamore::prelude::*;
 
 

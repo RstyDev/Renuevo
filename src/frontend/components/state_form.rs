@@ -1,7 +1,6 @@
 use crate::entities::{Bautismo, Estado, Ministerio, Servicio, TipoPresbitero};
-use crate::frontend::{components::servicio_forms::ServicioForms, lib::log, structs::Auth};
+use crate::frontend::{components::servicio_forms::ServicioForms, lib::log};
 use std::collections::HashMap;
-use std::str::FromStr;
 use sycamore::prelude::*;
 use web_sys::MouseEvent;
 const NAME: &'static str = "State Form";
@@ -22,7 +21,6 @@ fn get_all_signals(estado: Signal<Estado>)->(Signal<HashMap<String,String>>,Sign
 
 #[component(inline_props)]
 pub fn StateForm(
-    auth: Signal<Auth>,
     estado_numerado: Signal<u8>,
     estado_connector: Signal<Estado>,
     updated_estado: Signal<bool>,

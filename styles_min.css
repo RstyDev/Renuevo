@@ -124,6 +124,13 @@ li {
   width: 26dvw;
 }
 
+#selector_section {
+  left: 20dvw;
+  position: fixed;
+  bottom: 20px;
+  width: fit-content;
+}
+
 /* The Close Button */
 /*.close {*/
 /*  color: #aaaaaa;*/

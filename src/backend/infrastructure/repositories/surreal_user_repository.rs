@@ -10,7 +10,6 @@ use crate::{
     error::{AppError, AppRes},
 };
 use std::sync::Arc;
-use crate::entities::{Bautismo, Estado};
 
 #[derive(Clone)]
 pub struct SurrealUserRepository {

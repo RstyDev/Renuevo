@@ -305,3 +305,21 @@ footer {
 #select_presbiterado {
   align-self: baseline;
 }
+
+#selector_section {
+  border: 1px solid black;
+  /*padding: 8px 12px;*/
+  border-radius: 20px;
+  display: flex;
+  background: #fff;
+  margin-bottom: 25px;
+  & a{
+    padding: 8px 12px;
+
+    &.selected{
+      background-color: #000;
+      color: #fff;
+      border-radius: 20px;
+    }
+  }
+}

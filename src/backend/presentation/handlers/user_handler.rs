@@ -83,7 +83,7 @@ pub async fn update_user(
                 None => HttpResponse::NotFound().finish(),
             }
         },
-        Err(e) => HttpResponse::InternalServerError().finish(),
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
 #[post("/")]

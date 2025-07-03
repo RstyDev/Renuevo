@@ -7,7 +7,6 @@ use crate::{
     },
     error::{AppError, AppRes},
 };
-use std::collections::HashMap;
 use std::sync::Arc;
 
 #[derive(Clone)]

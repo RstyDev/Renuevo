@@ -1,5 +1,5 @@
 use crate::{
-    entities::{Ministerio, Servicio},
+    entities::Servicio,
     frontend::lib::log,
 };
 use std::collections::HashMap;

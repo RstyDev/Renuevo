@@ -5,12 +5,11 @@ use reqwest::{Method, StatusCode};
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 use sycamore::prelude::Signal;
-// use lazy_static::lazy_static;
 use chrono::{DateTime, Datelike, Utc};
 use serde::Serialize;
 use std::sync::LazyLock;
 use sycamore::prelude::*;
-use web_sys::js_sys::Math::exp;
+
 
 const NAME: &'static str = "Lib";
 
