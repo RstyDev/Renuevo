@@ -110,7 +110,8 @@ impl UserRepository for Arc<SurrealUserRepository> {
                     .pool
                     .upsert::<Option<PersonaDB>>(("personas", id.clone()))
                     .content(persona.to_db().unwrap())
-                    .await{
+                    .await
+                {
                     Ok(a) => Ok(Persona::from_db(a.unwrap())),
                     Err(e) => Err(AppError::DBErr(134, e.to_string())),
                 }

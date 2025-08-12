@@ -1,7 +1,4 @@
-use crate::{
-    entities::Servicio,
-    frontend::lib::log,
-};
+use crate::{entities::Servicio, frontend::lib::log};
 use std::collections::HashMap;
 use sycamore::prelude::*;
 use web_sys::MouseEvent;

@@ -140,7 +140,7 @@ pub enum EstadoCivil {
     Soltero,
     Casado,
     Viudo,
-    Divorciado
+    Divorciado,
 }
 
 impl ToString for EstadoCivil {
@@ -156,12 +156,12 @@ impl ToString for EstadoCivil {
 
 impl EstadoCivil {
     pub fn from_string(estado: String) -> AppRes<EstadoCivil> {
-        match estado.as_str(){
+        match estado.as_str() {
             "Soltero" => Ok(EstadoCivil::Soltero),
             "Casado" => Ok(EstadoCivil::Casado),
             "Viudo" => Ok(EstadoCivil::Viudo),
             "Divorciado" => Ok(EstadoCivil::Divorciado),
-            a=> Err(AppError::UnknownState(147,a.to_string())),
+            a => Err(AppError::UnknownState(147, a.to_string())),
         }
     }
 }
@@ -216,37 +216,38 @@ impl Estado {
     }
     pub fn get_bautismo(&self) -> Option<&Bautismo> {
         match self {
-            Estado::Fundamentos { bautismo,.. }|
-            Estado::PreMiembro { bautismo,.. } => bautismo.as_ref(),
-            Estado::Miembro { bautismo,.. } |
-            Estado::Diacono { bautismo,.. } |
-            Estado::Presbitero { bautismo,.. } => Some(bautismo),
+            Estado::Fundamentos { bautismo, .. } | Estado::PreMiembro { bautismo, .. } => {
+                bautismo.as_ref()
+            }
+            Estado::Miembro { bautismo, .. }
+            | Estado::Diacono { bautismo, .. }
+            | Estado::Presbitero { bautismo, .. } => Some(bautismo),
             _ => return None,
         }
     }
 
     pub fn get_tipo_presbitero(&self) -> Option<&TipoPresbitero> {
         match self {
-            Estado::Presbitero { tipo,.. } => Some(tipo),
+            Estado::Presbitero { tipo, .. } => Some(tipo),
             _ => None,
         }
     }
     pub fn get_conversion(&self) -> Option<&NaiveDate> {
         match self {
-            Estado::Fundamentos { conversion,.. } |
-            Estado::PreMiembro { conversion,.. } |
-            Estado::Miembro { conversion,.. } |
-            Estado::Diacono { conversion,.. } |
-            Estado::Presbitero { conversion,.. } => Some(conversion),
-            _ => None
+            Estado::Fundamentos { conversion, .. }
+            | Estado::PreMiembro { conversion, .. }
+            | Estado::Miembro { conversion, .. }
+            | Estado::Diacono { conversion, .. }
+            | Estado::Presbitero { conversion, .. } => Some(conversion),
+            _ => None,
         }
     }
     pub fn get_servicio(&self) -> Option<&Vec<Servicio>> {
         match self {
-            Estado::Miembro {servicio,..} |
-            Estado::Diacono {servicio,..} |
-            Estado::Presbitero {servicio,..}=> Some(servicio),
-            _=>None,
+            Estado::Miembro { servicio, .. }
+            | Estado::Diacono { servicio, .. }
+            | Estado::Presbitero { servicio, .. } => Some(servicio),
+            _ => None,
         }
     }
 }

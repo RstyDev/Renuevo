@@ -1,12 +1,11 @@
-mod bautismo;
 mod login;
 
-mod familia;
-mod persona;
-mod servicio;
+mod objetos;
+mod personas;
 
-pub use bautismo::*;
-pub use familia::*;
 pub use login::*;
-pub use persona::*;
-pub use servicio::*;
+pub use objetos::*;
+pub use personas::bautismo::*;
+pub use personas::familia::*;
+pub use personas::persona::*;
+pub use personas::servicio::*;

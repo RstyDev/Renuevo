@@ -1,7 +1,7 @@
 use crate::backend::application::use_cases::users::register_user::RegisterUserUseCase;
 use crate::backend::infrastructure::repositories::surreal_user_repository::SurrealUserRepository;
 use crate::entities::{
-    Bautismo, Estado, EstadoCivil, Ministerio, Persona, Servicio, Sexo, TipoPresbitero,
+    Bautismo, Estado, EstadoCivil, Libro, Ministerio, Persona, Servicio, Sexo, TipoPresbitero,
 };
 use chrono::Local;
 use std::sync::Arc;
@@ -87,7 +87,8 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>) {
         Local::now().naive_local().date(),
     ));
     personas.push(Persona::new(
-        None,Some(String::from("9werg78h")),
+        None,
+        Some(String::from("9werg78h")),
         String::from("Luciano"),
         String::from("Suarez"),
         Sexo::Masculino,
@@ -96,11 +97,13 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>) {
         Estado::Diacono {
             conversion: Local::now().date_naive(),
             bautismo: Bautismo::new(
-                Default::default(),Some(Default::default()),String::from("Alguna")
+                Default::default(),
+                Some(Default::default()),
+                String::from("Alguna"),
             ),
-            servicio: vec![Servicio::new(true,Ministerio::Bienvenida)],
+            servicio: vec![Servicio::new(true, Ministerio::Bienvenida)],
         },
-        Default::default()
+        Default::default(),
     ));
     personas.push(Persona::new(
         None,

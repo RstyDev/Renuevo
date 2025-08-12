@@ -18,7 +18,7 @@ pub async fn refresh_users(
             auth,
             Method::GET,
             None::<bool>,
-            true
+            true,
         )
         .await
         .unwrap(),

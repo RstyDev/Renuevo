@@ -2,16 +2,17 @@ use crate::entities::{Estado, Persona};
 use crate::frontend::lib::log;
 use crate::frontend::structs::{Auth, Tabs};
 use sycamore::prelude::*;
+use sycamore::reactive::Signal;
 const NAME: &'static str = "Header";
 
 #[component(inline_props)]
 pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Persona>>) -> View {
-    let (tabs1, tabs2) = (tabs.clone(), tabs.clone());
     let show_menu = create_signal(false);
     let sh_menu = show_menu.clone();
     let show_ministerio = create_signal(false);
     let show_user = create_signal(false);
-    let set_login_tab = move |_| tabs1.set(Tabs::Login);
+    let show_nosotros = create_signal(false);
+    let set_login_tab = move |_| tabs.set(Tabs::Login);
     let auth_selector = create_selector(move || auth.get_clone());
 
     let ministerio_selector = create_selector(move || {
@@ -80,12 +81,23 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
             }){
                 div(class="modal-content"){
                     ul(){
-                        li(on:click=move |_|{tabs2.set(Tabs::Inicio)}){a(){"Inicio"}}
-                        li(on:click=move |_|{tabs2.set(Tabs::Nosotros)}){a(){"Nosotros"}}
-                        li(on:click=move |_|{tabs2.set(Tabs::Involucrate)}){a(){"Involúcrate"}}
+                        li(on:click=move |_|{tabs.set(Tabs::Inicio)}){a(){"Inicio"}}
+                        li(on:click=move |_|{show_nosotros.set(true)}){a(){"Nosotros"}}
+                        div(id="dropdown",class=format!("modal-nosotros {}", show_nosotros.get().to_string()),on:click=move |_|{
+                            show_nosotros.set(false);
+                        }) {
+                            div(class="modal-content-nosotros"){
+                                ul(id="dropdown_nosotros"){
+                                    li(){a(on:click=move |_|{tabs.set(Tabs::QuienesSomos)}){"Quiénes somos"}}
+                                    li(){a(){"Confesión de fe"}}
+                                    li(){a(){"Membresía"}}
+                                }
+                            }
+                        }
+                        li(on:click=move |_|{tabs.set(Tabs::Involucrate)}){a(){"Involúcrate"}}
                         (match auth_selector.get_clone(){
                             Auth::Logged(_) => view!{
-                                li(on:click=move |_|{tabs2.set(Tabs::Miembros)}){a(){"Miembros"}}
+                                li(on:click=move |_|{tabs.set(Tabs::Miembros)}){a(){"Miembros"}}
                             },
                             Auth::NotLogged => view!{},
                         })
@@ -109,7 +121,7 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
                                                     view! {
                                                         li(on:click=move |_|{
                                                             log(NAME,109,&s);
-                                                            tabs2.set(Tabs::Ministerio(s.area().clone()));
+                                                            tabs.set(Tabs::Ministerio(s.area().clone()));
                                                         }){
                                                             a(){(s2.area().to_string())}}}
                                                 }).collect::<Vec<View>>(),

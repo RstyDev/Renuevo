@@ -37,7 +37,7 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.modal-ministerio, .modal-user {
+.modal-ministerio, .modal-user, .modal-nosotros {
   visibility: hidden;
   /*display: none; !* Hidden by default *!*/
   position: fixed; /* Stay in place */
@@ -179,7 +179,7 @@ button, select {
   outline: none;
 }
 
-#dropdown_ministerio{
+#dropdown_ministerio, #dropdown_nosotros{
   padding: 0;
 }
 

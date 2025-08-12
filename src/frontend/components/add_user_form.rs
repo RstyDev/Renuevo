@@ -1,7 +1,7 @@
 use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
 use crate::frontend::{
     components::{user_card::Mode, user_cards::UserCards},
-    lib::{log, request, refresh_users},
+    lib::{log, refresh_users, request},
     structs::Auth,
 };
 use async_std::task::block_on;
@@ -44,9 +44,15 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -
         );
         log(NAME, 16, &persona);
         block_on(async move {
-            request::<bool>("api/v1/users/", auth.clone(), Method::POST, Some(persona), false)
-                .await
-                .unwrap();
+            request::<bool>(
+                "api/v1/users/",
+                auth.clone(),
+                Method::POST,
+                Some(persona),
+                false,
+            )
+            .await
+            .unwrap();
             nombre.set(String::new());
             apellido.set(String::new());
             estado_civil.set(String::new());

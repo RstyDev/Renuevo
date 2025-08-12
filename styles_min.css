@@ -47,7 +47,7 @@ header {
   width: 80%;
 }
 
-.modal-content-ministerio, .modal-content-user {
+.modal-content-ministerio, .modal-content-user, .modal-content-nosotros {
   z-index: 2;
   background-color: #dddddd;
   position: relative;

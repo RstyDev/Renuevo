@@ -57,16 +57,16 @@
   display: flex;
   flex-direction: row;
 }
-.modal-content-ministerio, .modal-content-user {
+.modal-content-ministerio, .modal-content-user, .modal-content-nosotros {
   z-index: 2;
-  background-color: #dddddd;
+  background-color: #f7f7f7;
   position: relative;
   padding: 5px;
-  border: 1px solid #eeeeee;
+  border: 1px solid #fafafa;
   width: 25%;
   margin-left: auto;
 }
-#dropdown_ministerio{
+#dropdown_ministerio, #dropdown_nosotros{
   flex-direction: column;
 }
 #user {

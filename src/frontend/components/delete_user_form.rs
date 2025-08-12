@@ -4,7 +4,6 @@ use crate::frontend::{lib::refresh_users, structs::Auth};
 use async_std::task::block_on;
 use sycamore::prelude::*;
 
-
 #[component(inline_props)]
 pub fn DeleteUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
     let miembros2 = miembros.clone();

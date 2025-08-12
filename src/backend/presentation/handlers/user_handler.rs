@@ -9,7 +9,11 @@ use crate::{
     },
     entities::Persona,
 };
-use actix_web::{delete, get, post, put, web::{Data, Json, Path}, HttpResponse, Responder};
+use actix_web::{
+    delete, get, post, put,
+    web::{Data, Json, Path},
+    HttpResponse, Responder,
+};
 
 #[get("/")]
 pub async fn all_users(repo: Data<SurrealUserRepository>) -> impl Responder {
@@ -55,33 +59,44 @@ pub async fn delete_user(repo: Data<SurrealUserRepository>, id: Path<String>) ->
 pub async fn update_user(
     repo: Data<SurrealUserRepository>,
     input: Json<Persona>,
-    id: Path<String>
+    id: Path<String>,
 ) -> impl Responder {
     let repo = repo.into_inner();
-    match GetUserByIdUseCase::new(repo.clone()).get_by_id_with_password(id.into_inner().as_str()).await {
-        Ok(res) => {
-            match res {
-                Some(user) => {
-                    let path_user = input.into_inner();
-                    println!("From DB: {:#?}", user);
-                    let complete_user = Persona::new(user.id().map(|s|s.to_owned()),user.password().map(|s|s.to_owned()),user.nombre().to_string(),path_user.apellido().to_owned(),user.sexo().to_owned(),user.nacimiento().to_owned(),path_user.estado_civil().to_owned(),path_user.estado().to_owned(),user.registrado().to_owned());
-                    println!("New: {:#?}",complete_user);
-                    match UpdateUserUseCase::new(repo.clone())
-                        .update(complete_user)
-                        .await
-                    {
-                        Ok(user) => {
-                            println!("User {:#?}",user);
-                            HttpResponse::Ok().json(user)
-                        },
-                        Err(e) => {
-                            println!("Error while updating user: {:#?}", e);
-                            HttpResponse::InternalServerError().json(e)
-                        }
+    match GetUserByIdUseCase::new(repo.clone())
+        .get_by_id_with_password(id.into_inner().as_str())
+        .await
+    {
+        Ok(res) => match res {
+            Some(user) => {
+                let path_user = input.into_inner();
+                println!("From DB: {:#?}", user);
+                let complete_user = Persona::new(
+                    user.id().map(|s| s.to_owned()),
+                    user.password().map(|s| s.to_owned()),
+                    user.nombre().to_string(),
+                    path_user.apellido().to_owned(),
+                    user.sexo().to_owned(),
+                    user.nacimiento().to_owned(),
+                    path_user.estado_civil().to_owned(),
+                    path_user.estado().to_owned(),
+                    user.registrado().to_owned(),
+                );
+                println!("New: {:#?}", complete_user);
+                match UpdateUserUseCase::new(repo.clone())
+                    .update(complete_user)
+                    .await
+                {
+                    Ok(user) => {
+                        println!("User {:#?}", user);
+                        HttpResponse::Ok().json(user)
+                    }
+                    Err(e) => {
+                        println!("Error while updating user: {:#?}", e);
+                        HttpResponse::InternalServerError().json(e)
                     }
                 }
-                None => HttpResponse::NotFound().finish(),
             }
+            None => HttpResponse::NotFound().finish(),
         },
         Err(_) => HttpResponse::InternalServerError().finish(),
     }

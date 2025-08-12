@@ -1,4 +1,4 @@
-use crate::entities::{Estado, EstadoCivil, Sexo};
+use crate::entities::{Estado, EstadoCivil, Libro, Sexo};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
@@ -16,6 +16,7 @@ pub struct PersonaDB {
     estado: Estado,
     registrado: NaiveDate,
 }
+
 impl PersonaDB {
     pub fn new(
         id: Option<String>,

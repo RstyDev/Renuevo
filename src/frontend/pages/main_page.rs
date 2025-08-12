@@ -2,7 +2,9 @@ use crate::entities::Persona;
 use crate::frontend::{
     components::footer::Footer,
     lib::{log, request},
-    pages::{login::Login, miembros::Miembros, ministerio::Ministerio},
+    pages::{
+        login::Login, miembros::Miembros, ministerio::Ministerio, quienes_somos::QuienesSomos,
+    },
     structs::{Auth, Tabs},
 };
 use async_std::task::block_on;
@@ -67,7 +69,7 @@ pub fn MainPage(
                         button(){"DAR"}
                     }
                 },
-                Tabs::Nosotros => view!{"Nosotros"},
+                Tabs::QuienesSomos => view!{QuienesSomos()},
                 Tabs::Involucrate => view!{"Involucrate"},
                 Tabs::Donar => view!{"Donar"},
                 Tabs::Miembros => view!{

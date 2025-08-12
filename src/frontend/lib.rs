@@ -1,22 +1,20 @@
 use crate::entities::{LoginResult, Persona, RefreshResult};
 use crate::error::{AppError, AppRes};
 use crate::frontend::structs::Auth;
+use chrono::{DateTime, Datelike, Utc};
 use reqwest::{Method, StatusCode};
 use serde::de::DeserializeOwned;
-use std::fmt::Debug;
-use sycamore::prelude::Signal;
-use chrono::{DateTime, Datelike, Utc};
 use serde::Serialize;
+use std::fmt::Debug;
 use std::sync::LazyLock;
+use sycamore::prelude::Signal;
 use sycamore::prelude::*;
-
 
 const NAME: &'static str = "Lib";
 
 pub static HOST: LazyLock<String> = LazyLock::new(|| std::env!("BACKEND").to_string());
 
 //const HOST: &str = "http://localhost:8088/";
-
 
 pub async fn refresh_users(miembros: Signal<Option<Vec<Persona>>>, auth: Signal<Auth>) {
     miembros.set(
@@ -42,20 +40,28 @@ async fn fetch<T: DeserializeOwned>(
     };
     match res {
         Ok(r) => match r.status() {
-            StatusCode::OK => if expects{
-                r
-                    .json::<T>()
-                    .await
-                    .map_err(|e| AppError::HttpErr(46, e.to_string()))
-                    .map(|t| Some(t))
-            }else {
-                Ok(None)
-            },
+            StatusCode::OK => {
+                if expects {
+                    r.json::<T>()
+                        .await
+                        .map_err(|e| AppError::HttpErr(46, e.to_string()))
+                        .map(|t| Some(t))
+                } else {
+                    Ok(None)
+                }
+            }
             StatusCode::NO_CONTENT => Ok(None),
-            other_status => Err(AppError::HttpErr(49, format!("Status: {}, \nMessage: {}", other_status,match r.json::<String>().await{
-                Ok(v) => v,
-                Err(e) => e.to_string(),
-            }))),
+            other_status => Err(AppError::HttpErr(
+                49,
+                format!(
+                    "Status: {}, \nMessage: {}",
+                    other_status,
+                    match r.json::<String>().await {
+                        Ok(v) => v,
+                        Err(e) => e.to_string(),
+                    }
+                ),
+            )),
         },
         Err(e) => Err(AppError::HttpErr(54, e.to_string())),
     }
@@ -74,7 +80,7 @@ pub async fn request<T: DeserializeOwned>(
     login: Signal<Auth>,
     method: Method,
     body: Option<impl Serialize + ?Sized + Clone>,
-    expects: bool
+    expects: bool,
 ) -> AppRes<Option<T>> {
     match login.get_clone_untracked() {
         Auth::NotLogged => Err(AppError::HttpErr(73, String::from("Not logged in."))),
@@ -85,7 +91,7 @@ pub async fn request<T: DeserializeOwned>(
                 auth.token.clone(),
                 method.clone(),
                 body.clone(),
-                expects
+                expects,
             )
             .await
             {
@@ -96,7 +102,7 @@ pub async fn request<T: DeserializeOwned>(
                         auth.refresh.clone(),
                         Method::POST,
                         None::<bool>,
-                        expects
+                        expects,
                     )
                     .await
                     {

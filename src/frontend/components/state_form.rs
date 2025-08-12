@@ -5,18 +5,70 @@ use sycamore::prelude::*;
 use web_sys::MouseEvent;
 const NAME: &'static str = "State Form";
 
-fn get_all_signals(estado: Signal<Estado>)->(Signal<HashMap<String,String>>,Signal<Vec<Servicio>>,Signal<String>,Signal<String>,Signal<String>,Signal<String>,Signal<String>){
+fn get_all_signals(
+    estado: Signal<Estado>,
+) -> (
+    Signal<HashMap<String, String>>,
+    Signal<Vec<Servicio>>,
+    Signal<String>,
+    Signal<String>,
+    Signal<String>,
+    Signal<String>,
+    Signal<String>,
+) {
     let estado = estado.get_clone();
-    let servicios_map = create_signal(estado.get_servicio().map(|servicio|servicio.into_iter()              //uno
-        .map(|serv| (serv.area().to_string(), serv.leader().to_string()))
-        .collect::<HashMap<String, String>>()).unwrap_or_default());
-    let servicios = create_signal(estado.get_servicio().cloned().unwrap_or_default());                              //tres
-    let conversion = create_signal(estado.get_conversion().map(|c|c.to_string()).unwrap_or_default());        //dos
-    let iglesia_bautismo = create_signal(estado.get_bautismo().map(|b|b.iglesia().to_string()).unwrap_or_default());    //cuatro
-    let fecha_bautismo = create_signal(estado.get_bautismo().map(|b|b.fecha().to_string()).unwrap_or_default()); //cinco
-    let profesion_de_fe = create_signal(estado.get_bautismo().map(|b|b.profesion_de_fe().map(|p|p.to_string())).flatten().unwrap_or_default()); //6
-    let tipo_presbitero = create_signal(estado.get_tipo_presbitero().map(|p|p.to_string()).unwrap_or_default());//7
-    (servicios_map,servicios,conversion,iglesia_bautismo,fecha_bautismo,profesion_de_fe,tipo_presbitero)
+    let servicios_map = create_signal(
+        estado
+            .get_servicio()
+            .map(|servicio| {
+                servicio
+                    .into_iter() //uno
+                    .map(|serv| (serv.area().to_string(), serv.leader().to_string()))
+                    .collect::<HashMap<String, String>>()
+            })
+            .unwrap_or_default(),
+    );
+    let servicios = create_signal(estado.get_servicio().cloned().unwrap_or_default()); //tres
+    let conversion = create_signal(
+        estado
+            .get_conversion()
+            .map(|c| c.to_string())
+            .unwrap_or_default(),
+    ); //dos
+    let iglesia_bautismo = create_signal(
+        estado
+            .get_bautismo()
+            .map(|b| b.iglesia().to_string())
+            .unwrap_or_default(),
+    ); //cuatro
+    let fecha_bautismo = create_signal(
+        estado
+            .get_bautismo()
+            .map(|b| b.fecha().to_string())
+            .unwrap_or_default(),
+    ); //cinco
+    let profesion_de_fe = create_signal(
+        estado
+            .get_bautismo()
+            .map(|b| b.profesion_de_fe().map(|p| p.to_string()))
+            .flatten()
+            .unwrap_or_default(),
+    ); //6
+    let tipo_presbitero = create_signal(
+        estado
+            .get_tipo_presbitero()
+            .map(|p| p.to_string())
+            .unwrap_or_default(),
+    ); //7
+    (
+        servicios_map,
+        servicios,
+        conversion,
+        iglesia_bautismo,
+        fecha_bautismo,
+        profesion_de_fe,
+        tipo_presbitero,
+    )
 }
 
 #[component(inline_props)]
@@ -28,17 +80,27 @@ pub fn StateForm(
     // log(NAME, 8, &estado_numerado.get());
     // log(NAME, 9, &estado_connector.get_clone());
 
-    let (servicios_map,servicios,conversion,iglesia_bautismo,fecha_bautismo,profesion_de_fe,tipo_presbitero) = get_all_signals(estado_connector);
-    let bautismo_disabled = create_signal(match estado_connector.get_clone(){
+    let (
+        servicios_map,
+        servicios,
+        conversion,
+        iglesia_bautismo,
+        fecha_bautismo,
+        profesion_de_fe,
+        tipo_presbitero,
+    ) = get_all_signals(estado_connector);
+    let bautismo_disabled = create_signal(match estado_connector.get_clone() {
         Estado::Nuevo => false,
-        Estado::Fundamentos { bautismo, ..} | Estado::PreMiembro { bautismo, ..} => match bautismo.map(|b|b.profesion_de_fe()).flatten() {
-            Some(_) => true,
-            None => false,
-        },
+        Estado::Fundamentos { bautismo, .. } | Estado::PreMiembro { bautismo, .. } => {
+            match bautismo.map(|b| b.profesion_de_fe()).flatten() {
+                Some(_) => true,
+                None => false,
+            }
+        }
         _ => true,
     });
 
-    log(NAME,41,&bautismo_disabled.get());
+    log(NAME, 41, &bautismo_disabled.get());
 
     let map = servicios_map.clone();
     create_memo(move || log(NAME, 14, &map));
@@ -73,18 +135,32 @@ pub fn StateForm(
         log(NAME, 22, &estado_connector.get_clone());
         let connector = estado_connector.get_clone();
         s1.set(connector.get_servicio().cloned().unwrap_or_default());
-        c1.set(connector.get_conversion().map(|c|c.to_string()).unwrap_or_default());
+        c1.set(
+            connector
+                .get_conversion()
+                .map(|c| c.to_string())
+                .unwrap_or_default(),
+        );
     });
 
     let get_bautismo = move || -> Option<Bautismo> {
         let fecha = fecha_bautismo.get_clone();
         let profesion = profesion_de_fe.get_clone();
         let iglesia = iglesia_bautismo.get_clone();
-        log(NAME,83,&format!("fecha: {}, profesion: {}, iglesia: {}",fecha.len(),profesion.len(),iglesia.len()));
-        match fecha.len()>0{
+        log(
+            NAME,
+            83,
+            &format!(
+                "fecha: {}, profesion: {}, iglesia: {}",
+                fecha.len(),
+                profesion.len(),
+                iglesia.len()
+            ),
+        );
+        match fecha.len() > 0 {
             true => Some(Bautismo::new(
                 fecha.parse().unwrap(),
-                match profesion.len()>0{
+                match profesion.len() > 0 {
                     true => Some(profesion.parse().unwrap()),
                     false => None,
                 },
@@ -95,41 +171,39 @@ pub fn StateForm(
     };
     let save_event = move |ev: MouseEvent| {
         ev.prevent_default();
-        estado_connector.set(
-            match estado_numerado.get(){
-                0 => Estado::Visitante,
-                1 => Estado::Nuevo,
-                2 => Estado::Fundamentos {
-                    bautismo: get_bautismo(),
-                    conversion: conversion.get_clone().parse().unwrap(),
+        estado_connector.set(match estado_numerado.get() {
+            0 => Estado::Visitante,
+            1 => Estado::Nuevo,
+            2 => Estado::Fundamentos {
+                bautismo: get_bautismo(),
+                conversion: conversion.get_clone().parse().unwrap(),
+            },
+            3 => Estado::PreMiembro {
+                bautismo: get_bautismo(),
+                conversion: conversion.get_clone().parse().unwrap(),
+            },
+            4 => Estado::Miembro {
+                servicio: servicios.get_clone(),
+                bautismo: get_bautismo().unwrap(),
+                conversion: conversion.get_clone().parse().unwrap(),
+            },
+            5 => Estado::Diacono {
+                servicio: servicios.get_clone(),
+                bautismo: get_bautismo().unwrap(),
+                conversion: conversion.get_clone().parse().unwrap(),
+            },
+            6 => Estado::Presbitero {
+                tipo: match tipo_presbitero.get_clone().as_str() {
+                    "Maestro" => TipoPresbitero::Maestro,
+                    "Governante" => TipoPresbitero::Governante,
+                    _ => panic!("Not possible"),
                 },
-                3 => Estado::PreMiembro {
-                    bautismo: get_bautismo(),
-                    conversion: conversion.get_clone().parse().unwrap(),
-                },
-                4 => Estado::Miembro {
-                    servicio: servicios.get_clone(),
-                    bautismo: get_bautismo().unwrap(),
-                    conversion: conversion.get_clone().parse().unwrap(),
-                },
-                5 => Estado::Diacono {
-                    servicio: servicios.get_clone(),
-                    bautismo: get_bautismo().unwrap(),
-                    conversion: conversion.get_clone().parse().unwrap(),
-                },
-                6 => Estado::Presbitero {
-                    tipo: match tipo_presbitero.get_clone().as_str() {
-                        "Maestro" => TipoPresbitero::Maestro,
-                        "Governante" => TipoPresbitero::Governante,
-                        _ => panic!("Not possible"),
-                    },
-                    servicio: servicios.get_clone(),
-                    bautismo: get_bautismo().unwrap(),
-                    conversion: conversion.get_clone().parse().unwrap(),
-                },
-                _=> panic!("Not possible"),
-            }
-        );
+                servicio: servicios.get_clone(),
+                bautismo: get_bautismo().unwrap(),
+                conversion: conversion.get_clone().parse().unwrap(),
+            },
+            _ => panic!("Not possible"),
+        });
         updated_estado.set(true);
     };
     view! {

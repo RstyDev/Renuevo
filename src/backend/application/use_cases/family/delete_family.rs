@@ -5,14 +5,14 @@ use crate::{
     error::AppRes,
 };
 
-pub struct DeleteUserUseCase<T: FamilyRepository> {
+pub struct DeleteFamilyUseCase<T: FamilyRepository> {
     family_service: FamilyService<T>,
 }
 
-impl<T: FamilyRepository> DeleteUserUseCase<T> {
+impl<T: FamilyRepository> DeleteFamilyUseCase<T> {
     pub fn new(family_repo: T) -> Self {
         let family_service = FamilyService::new(family_repo);
-        DeleteUserUseCase { family_service }
+        DeleteFamilyUseCase { family_service }
     }
 
     pub async fn delete(&self, id: &str) -> AppRes<()> {

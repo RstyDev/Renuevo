@@ -17,7 +17,7 @@ impl Auth {
 #[derive(Clone, Debug, PartialEq)]
 pub enum Tabs {
     Inicio,
-    Nosotros,
+    QuienesSomos,
     Involucrate,
     Donar,
     Miembros,

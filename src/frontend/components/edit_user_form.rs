@@ -1,16 +1,18 @@
-use async_std::task::block_on;
-use reqwest::Method;
 use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
 use crate::frontend::components::{
     state_form::StateForm,
     user_card::{ActionOnUser, Mode},
     user_cards::UserCards,
 };
-use crate::frontend::{lib::{log, refresh_users, request}, structs::Auth};
+use crate::frontend::{
+    lib::{log, refresh_users, request},
+    structs::Auth,
+};
+use async_std::task::block_on;
+use reqwest::Method;
 use sycamore::prelude::*;
 
 const NAME: &'static str = "Edit User Form";
-
 
 #[component(inline_props)]
 pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
@@ -18,9 +20,11 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
     let action = create_signal(ActionOnUser::None);
     let act2 = action.clone();
     let estado_civil = create_signal(String::new());
-    let estado = create_signal(form.get_clone().map(|user|{
-        user.estado().to_plain_string()
-    }).unwrap_or_default());
+    let estado = create_signal(
+        form.get_clone()
+            .map(|user| user.estado().to_plain_string())
+            .unwrap_or_default(),
+    );
     let form_selector = create_selector(move || form.get_clone());
     let opciones_estado = create_signal(0);
     let estado_connector = create_signal(Estado::Visitante);
@@ -45,19 +49,19 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
         _ => (),
     });
     create_effect(move || {
-        if let Some(user) = form.get_clone(){
-            log(NAME,63,&user.estado());
+        if let Some(user) = form.get_clone() {
+            log(NAME, 63, &user.estado());
             estado.set(user.estado().to_plain_string())
         }
     });
     create_effect(move || {
-        log(NAME,68,&estado.get_clone());
+        log(NAME, 68, &estado.get_clone());
     });
 
     create_memo(move || {
-        if updated_estado.get(){
+        if updated_estado.get() {
             let estado = estado_connector.get_clone();
-            match form.get_clone_untracked(){
+            match form.get_clone_untracked() {
                 Some(persona) => {
                     let user = Persona::new(
                         persona.id().cloned(),
@@ -70,19 +74,25 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
                         estado,
                         persona.registrado().clone(),
                     );
-                    log(NAME,81,&user);
+                    log(NAME, 81, &user);
                     block_on(async move {
-                        log(NAME,86,&user.id());
-                        let result = request::<Persona>(format!("api/v1/users/{}",user.id().unwrap()), auth.clone(), Method::PUT, Some(user), true)
-                            .await;
-                        log(NAME,90,&result);
+                        log(NAME, 86, &user.id());
+                        let result = request::<Persona>(
+                            format!("api/v1/users/{}", user.id().unwrap()),
+                            auth.clone(),
+                            Method::PUT,
+                            Some(user),
+                            true,
+                        )
+                        .await;
+                        log(NAME, 90, &result);
                         // nombre.set(String::new());
                         // apellido.set(String::new());
                         // estado_civil.set(String::new());
                         // nacimiento.set(String::new());
                         refresh_users(miembros.clone(), auth.clone()).await;
                     });
-                },
+                }
                 None => (),
             }
             updated_estado.set(false);
@@ -92,7 +102,7 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
 
     create_effect(move || {
         opciones_estado.set(match estado.get_clone().as_str() {
-            "Visitante"=> 0,
+            "Visitante" => 0,
             "Nuevo" => 1,
             "Fundamentos" => 2,
             "PreMiembro" => 3,
@@ -101,9 +111,8 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
             "Presbitero" => 6,
             _ => 0,
         });
-        log(NAME,61,&estado.get_clone());
+        log(NAME, 61, &estado.get_clone());
     });
-
 
     let mode = Mode::Edit(action.clone());
 
