@@ -10,14 +10,16 @@ use actix_web::web::Data;
 use actix_web::{App, HttpServer};
 use dotenv::dotenv;
 use std::env;
-// use std::sync::Arc;
-// use crate::backend::infrastructure::prefill::prefill;
+use std::sync::Arc;
+use crate::backend::infrastructure::prefill::prefill;
 
 pub async fn run() -> std::io::Result<()> {
     println!("{:#?}", dotenv().ok());
     let repo = SurrealUserRepository::new().await;
     let family_repo = SurrealFamilyRepository::new().await;
-    // prefill(Arc::from(repo.clone())).await;
+    if env::var("PREFILL").unwrap().eq_ignore_ascii_case("true") {
+        prefill(Arc::from(repo.clone())).await;
+    }
     let app_data = Data::new(repo);
     let db = establish_connection().await;
     println!("Starting...");

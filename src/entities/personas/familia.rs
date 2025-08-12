@@ -108,16 +108,28 @@ impl Familia {
     #[cfg(feature = "ssr")]
     pub fn from_db(
         familia: FamiliaDB,
-        padre: Option<PersonaDB>,
-        madre: Option<PersonaDB>,
-        hijos: Vec<PersonaDB>,
     ) -> Self {
         Self {
             id: familia.id().as_ref().map(|id| id.id.to_string()),
             apellido: familia.apellido().to_string(),
-            padre: padre.map(|p| Persona::from_db(p)),
-            madre: madre.map(|m| Persona::from_db(m)),
-            hijos: hijos.into_iter().map(|h| Persona::from_db(h)).collect(),
+            padre: familia.padre().as_ref().map(|p| Persona::from_db(p.to_owned())),
+            madre: familia.madre().as_ref().map(|m| Persona::from_db(m.to_owned())),
+            hijos: familia.hijos().into_iter().map(|h| Persona::from_db(h.to_owned())).collect(),
         }
     }
+    // #[cfg(feature = "ssr")]
+    // pub fn from_db_complete(
+    //     familia: FamiliaDB,
+    //     padre: Option<PersonaDB>,
+    //     madre: Option<PersonaDB>,
+    //     hijos: Vec<PersonaDB>,
+    // ) -> Self {
+    //     Self {
+    //         id: familia.id().as_ref().map(|id| id.id.to_string()),
+    //         apellido: familia.apellido().to_string(),
+    //         padre: padre.map(|p| Persona::from_db(p)),
+    //         madre: madre.map(|m| Persona::from_db(m)),
+    //         hijos: hijos.into_iter().map(|h| Persona::from_db(h)).collect(),
+    //     }
+    // }
 }

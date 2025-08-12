@@ -111,14 +111,28 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
             hijos,
         );
 
-        let _: Vec<FamiliaDB> = self
-            .pool
-            .insert("familias")
-            .content(familia)
-            .await
-            .map_err(|e| AppError::DBErr(28, e.to_string()))?;
 
-        Ok(())
+        let res = self
+            .pool
+            .query(
+                r#"
+        insert into familias {
+            apellido: $familia.apellido,
+            madre: $familia.madre.id,
+            padre: $familia.padre.id,
+            hijos: $familia.hijos.map(|$hijo|{$hijo.id}),
+        }
+        "#,
+            )
+            .bind(("familia", familia))
+            .await;
+        match res {
+            Ok(a) => {
+                println!("{:#?}", a);
+                Ok(())
+            }
+            Err(e) => Err(AppError::DBErr(41, e.to_string())),
+        }
     }
 
     async fn delete(&self, id: &str) -> AppRes<()> {
@@ -130,28 +144,32 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
     }
 
     async fn get_all(&self) -> AppRes<Vec<Familia>> {
-        match self.pool.select::<Vec<FamiliaDB>>("familias").await {
-            Ok(res) => {
-                let mut familias = vec![];
-                for familia in res {
-                    familias.push(get_familia_from_db(self.pool.clone(), familia).await?)
-                }
-                Ok(familias)
-            }
-            Err(e) => Err(AppError::DBErr(75, e.to_string())),
-        }
+        let mut res = self.pool.query(r#"
+            SELECT * FROM familias FETCH padre, madre, hijos;
+        "#).await.map_err(|e| AppError::DBErr(135, e.to_string()))?;
+        let familias = res.take::<Vec<FamiliaDB>>(0).map_err(|e| AppError::DBErr(136, e.to_string()))?;
+        Ok(familias.into_iter().map(|f|Familia::from_db(f)).collect())
     }
 
     async fn get_by_id(&self, id: &str) -> AppRes<Option<Familia>> {
-        match self
-            .pool
-            .select::<Option<FamiliaDB>>(("familias", id))
-            .await
-        {
-            Ok(Some(hermano)) => Ok(Some(get_familia_from_db(self.pool.clone(), hermano).await?)),
-            Ok(None) => Ok(None),
-            Err(e) => Err(AppError::DBErr(86, e.to_string())),
-        }
+        let mut res = self.pool.query(r#"
+            SELECT * FROM ONLY type::thing($familia) FETCH padre, madre, hijos;
+        "#).bind(("familia",format!("familias:{}",id))).await.map_err(|e| AppError::DBErr(143, e.to_string()))?;
+        println!("{:#?}",res);
+        let familia = res.take::<Option<FamiliaDB>>(0).map_err(|e| AppError::DBErr(143, e.to_string()))?;
+        Ok(familia.map(|f|Familia::from_db(f))) //TODO hay que arreglar algo en ese query
+        // match self
+        //     .pool
+        //     .select::<Option<FamiliaDB>>(("familias", id))
+        //     .await
+        // {
+        //     Ok(Some(hermano)) => Ok(
+        //         None
+        //         // Some(get_familia_from_db(self.pool.clone(), hermano).await?)
+        //     ),
+        //     Ok(None) => Ok(None),
+        //     Err(e) => Err(AppError::DBErr(86, e.to_string())),
+        // }
     }
 
     async fn update(&self, familia: Familia) -> AppRes<()> {
@@ -174,37 +192,40 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
     }
 }
 
-async fn get_familia_from_db(pool: DBPool, familia: FamiliaDB) -> AppRes<Familia> {
-    let mut padre = None;
-    if let Some(padre_db) = familia.padre() {
-        match pool
-            .select::<Option<PersonaDB>>((padre_db.tb.as_str(), padre_db.id.to_string()))
-            .await
-        {
-            Ok(padre_db) => padre = padre_db,
-            Err(e) => return Err(AppError::DBErr(94, e.to_string())),
-        }
-    }
-    let mut madre = None;
-    if let Some(madre_db) = familia.madre() {
-        match pool
-            .select::<Option<PersonaDB>>((madre_db.tb.as_str(), madre_db.id.to_string()))
-            .await
-        {
-            Ok(madre_db) => madre = madre_db,
-            Err(e) => return Err(AppError::DBErr(94, e.to_string())),
-        }
-    }
-    let mut hijos = vec![];
-    for hijo_db in familia.hijos() {
-        match pool
-            .select::<Option<PersonaDB>>((hijo_db.tb.as_str(), hijo_db.id.to_string()))
-            .await
-        {
-            Ok(Some(hijo_db)) => hijos.push(hijo_db),
-            Ok(None) => {}
-            Err(e) => return Err(AppError::DBErr(94, e.to_string())),
-        }
-    }
-    Ok(Familia::from_db(familia, padre, madre, hijos))
-}
+// async fn get_familia_from_db(pool: DBPool, familia: FamiliaDB) -> AppRes<Familia> {
+// //     pool.query(r#"
+// //         SELECT
+// // "#)
+//     let mut padre = None;
+//     if let Some(padre_db) = familia.padre() {
+//         match pool
+//             .select::<Option<PersonaDB>>((padre_db.tb.as_str(), padre_db.id.to_string()))
+//             .await
+//         {
+//             Ok(padre_db) => padre = padre_db,
+//             Err(e) => return Err(AppError::DBErr(94, e.to_string())),
+//         }
+//     }
+//     let mut madre = None;
+//     if let Some(madre_db) = familia.madre() {
+//         match pool
+//             .select::<Option<PersonaDB>>((madre_db.tb.as_str(), madre_db.id.to_string()))
+//             .await
+//         {
+//             Ok(madre_db) => madre = madre_db,
+//             Err(e) => return Err(AppError::DBErr(94, e.to_string())),
+//         }
+//     }
+//     let mut hijos = vec![];
+//     for hijo_db in familia.hijos() {
+//         match pool
+//             .select::<Option<PersonaDB>>((hijo_db.tb.as_str(), hijo_db.id.to_string()))
+//             .await
+//         {
+//             Ok(Some(hijo_db)) => hijos.push(hijo_db),
+//             Ok(None) => {}
+//             Err(e) => return Err(AppError::DBErr(94, e.to_string())),
+//         }
+//     }
+//     Ok(Familia::from_db(familia, padre, madre, hijos))
+// }
