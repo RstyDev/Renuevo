@@ -4,6 +4,7 @@ use crate::frontend::{
     lib::{log, request},
     pages::{
         login::Login, miembros::Miembros, ministerio::Ministerio, quienes_somos::QuienesSomos,
+        involucrate::Involucrate
     },
     structs::{Auth, Tabs},
 };
@@ -70,7 +71,7 @@ pub fn MainPage(
                     }
                 },
                 Tabs::QuienesSomos => view!{QuienesSomos()},
-                Tabs::Involucrate => view!{"Involucrate"},
+                Tabs::Involucrate => view!{Involucrate()},
                 Tabs::Donar => view!{"Donar"},
                 Tabs::Miembros => view!{
                     Miembros(auth = auth.clone())
