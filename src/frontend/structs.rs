@@ -18,7 +18,6 @@ impl Auth {
 pub enum Tabs {
     Inicio,
     QuienesSomos,
-    Involucrate,
     Donar,
     Miembros,
     Ministerio(Ministerio),

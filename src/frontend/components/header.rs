@@ -94,7 +94,7 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
                                 }
                             }
                         }
-                        li(on:click=move |_|{tabs.set(Tabs::Involucrate)}){a(){"Involúcrate"}}
+                        li(){a(href="https://www.paypal.com/ncp/payment/54LQSZXQDVTR4",target="_blank"){"Involúcrate"}}
                         (match auth_selector.get_clone(){
                             Auth::Logged(_) => view!{
                                 li(on:click=move |_|{tabs.set(Tabs::Miembros)}){a(){"Miembros"}}

@@ -71,7 +71,6 @@ pub fn MainPage(
                     }
                 },
                 Tabs::QuienesSomos => view!{QuienesSomos()},
-                Tabs::Involucrate => view!{Involucrate()},
                 Tabs::Donar => view!{"Donar"},
                 Tabs::Miembros => view!{
                     Miembros(auth = auth.clone())

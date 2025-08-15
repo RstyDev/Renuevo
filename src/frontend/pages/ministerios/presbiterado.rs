@@ -28,11 +28,16 @@ pub fn Presbiterado(auth: Signal<Auth>) -> View {
                 PRSelector::Remove => "selected",
                 _=> "",
             },on:click=move|_|pr_state.set(PRSelector::Remove)){"Quitar"}
+            a(class=match pr_selector.get(){
+                PRSelector::Relate => "selected",
+                _=> "",
+            },on:click=move|_|pr_state.set(PRSelector::Relate)){"Relacionar"}
         }
         (match pr_selector.get(){
             PRSelector::Add => view! {AddUserForm(auth = auth, miembros = miembros)},
             PRSelector::Remove => view! {DeleteUserForm(auth = auth, miembros = miembros)},
             PRSelector::Edit => view! {EditUserForm(auth = auth, miembros = miembros)},
+            PRSelector::Relate => view!{},
         })
     }
 }
@@ -41,4 +46,5 @@ enum PRSelector {
     Add,
     Edit,
     Remove,
+    Relate,
 }
