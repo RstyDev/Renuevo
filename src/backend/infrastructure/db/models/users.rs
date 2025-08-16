@@ -15,6 +15,7 @@ pub struct PersonaDB {
     estado_civil: EstadoCivil,
     estado: Estado,
     registrado: NaiveDate,
+    familia: Option<Thing>,
 }
 
 impl PersonaDB {
@@ -28,6 +29,7 @@ impl PersonaDB {
         estado_civil: EstadoCivil,
         estado: Estado,
         registrado: NaiveDate,
+        familia: Option<Thing>,
     ) -> Self {
         Self {
             id: id.map(|s| Thing::from(("personas", s.as_str()))),
@@ -39,6 +41,7 @@ impl PersonaDB {
             estado_civil,
             estado,
             registrado,
+            familia,
         }
     }
 
@@ -76,5 +79,9 @@ impl PersonaDB {
 
     pub fn sexo(&self) -> Sexo {
         self.sexo
+    }
+
+    pub fn familia(&self) -> &Option<Thing> {
+        &self.familia
     }
 }

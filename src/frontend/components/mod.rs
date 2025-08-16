@@ -3,6 +3,7 @@ pub mod delete_user_form;
 pub mod edit_user_form;
 pub mod footer;
 pub mod header;
+pub mod relate_users_form;
 mod servicio_forms;
 pub mod state_form;
 pub mod user_card;

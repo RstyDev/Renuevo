@@ -85,6 +85,10 @@ input::-webkit-inner-spin-button {
   overflow-y: auto;
   margin-bottom: 50px;
 }
+#padres{
+  display: flex;
+  gap: 50px;
+}
 
 .logo {
   height: 6em;

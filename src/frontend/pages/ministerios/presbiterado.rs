@@ -1,6 +1,7 @@
 use crate::frontend::{
     components::{
         add_user_form::AddUserForm, delete_user_form::DeleteUserForm, edit_user_form::EditUserForm,
+        relate_users_form::RelateUsersForm,
     },
     lib::log,
     structs::Auth,
@@ -37,7 +38,7 @@ pub fn Presbiterado(auth: Signal<Auth>) -> View {
             PRSelector::Add => view! {AddUserForm(auth = auth, miembros = miembros)},
             PRSelector::Remove => view! {DeleteUserForm(auth = auth, miembros = miembros)},
             PRSelector::Edit => view! {EditUserForm(auth = auth, miembros = miembros)},
-            PRSelector::Relate => view!{},
+            PRSelector::Relate => view!{RelateUsersForm(auth = auth, miembros = miembros)},
         })
     }
 }

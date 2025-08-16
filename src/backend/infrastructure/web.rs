@@ -1,4 +1,5 @@
 use crate::backend::infrastructure::db::connection::establish_connection;
+use crate::backend::infrastructure::prefill::prefill;
 use crate::backend::infrastructure::repositories::surreal_family_repository::SurrealFamilyRepository;
 use crate::backend::{
     infrastructure::repositories::surreal_user_repository::SurrealUserRepository,
@@ -11,7 +12,6 @@ use actix_web::{App, HttpServer};
 use dotenv::dotenv;
 use std::env;
 use std::sync::Arc;
-use crate::backend::infrastructure::prefill::prefill;
 
 pub async fn run() -> std::io::Result<()> {
     println!("{:#?}", dotenv().ok());

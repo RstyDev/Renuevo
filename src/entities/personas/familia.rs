@@ -105,16 +105,23 @@ impl Familia {
         ))
     }
     #[cfg(feature = "ssr")]
-    pub fn from_db(
-        familia: FamiliaDB,
-    ) -> Self {
+    pub fn from_db(familia: FamiliaDB) -> Self {
         Self {
             id: familia.id().as_ref().map(|id| id.id.to_string()),
             apellido: familia.apellido().to_string(),
-            padre: familia.padre().as_ref().map(|p| Persona::from_db(p.to_owned())),
-            madre: familia.madre().as_ref().map(|m| Persona::from_db(m.to_owned())),
-            hijos: familia.hijos().into_iter().map(|h| Persona::from_db(h.to_owned())).collect(),
+            padre: familia
+                .padre()
+                .as_ref()
+                .map(|p| Persona::from_db(p.to_owned())),
+            madre: familia
+                .madre()
+                .as_ref()
+                .map(|m| Persona::from_db(m.to_owned())),
+            hijos: familia
+                .hijos()
+                .into_iter()
+                .map(|h| Persona::from_db(h.to_owned()))
+                .collect(),
         }
     }
-
 }

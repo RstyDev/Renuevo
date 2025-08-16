@@ -100,6 +100,7 @@ impl Persona {
                 self.estado_civil,
                 self.estado,
                 self.registrado,
+                None,
             )),
         }
     }
