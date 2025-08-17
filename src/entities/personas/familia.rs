@@ -30,6 +30,8 @@ impl Familia {
         }
     }
 
+
+
     pub fn id(&self) -> &Option<String> {
         &self.id
     }
@@ -56,6 +58,10 @@ impl Familia {
 
     pub fn set_apellido(&mut self, apellido: String) {
         self.apellido = apellido;
+    }
+
+    pub fn set_padre(&mut self, padre: Option<Persona>) {
+        self.padre = padre;
     }
 
     pub fn set_madre(&mut self, madre: Option<Persona>) {
