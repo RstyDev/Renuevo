@@ -38,7 +38,7 @@ async fn fetch<T: DeserializeOwned>(
         None => req.send().await,
         Some(body) => req.json(&body).send().await,
     };
-    log(NAME,41,&res);
+    log(NAME, 41, &res);
     match res {
         Ok(r) => match r.status() {
             StatusCode::OK => {
@@ -116,9 +116,15 @@ pub async fn request<T: DeserializeOwned>(
                                     ..result.clone()
                                 })
                             });
-                            fetch::<T>(format!("{}/{}",HOST.as_str(),url.as_ref()).as_str(), refresh.unwrap().token, method, body, expects)
-                                .await
-                                .map_err(|e| e.into())
+                            fetch::<T>(
+                                format!("{}/{}", HOST.as_str(), url.as_ref()).as_str(),
+                                refresh.unwrap().token,
+                                method,
+                                body,
+                                expects,
+                            )
+                            .await
+                            .map_err(|e| e.into())
                         }
                         Err(e) => Err(e),
                     }

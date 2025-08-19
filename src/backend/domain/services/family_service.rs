@@ -24,7 +24,7 @@ impl<T: FamilyRepository> FamilyService<T> {
     pub async fn get_all(&self) -> AppRes<Vec<Familia>> {
         self.family_repo.get_all().await
     }
-    pub async fn update(&self, familia: Familia) -> AppRes<()> {
-        self.family_repo.update(familia).await
+    pub async fn update(&self, familia: Familia, id: String) -> AppRes<()> {
+        self.family_repo.update(familia,id).await
     }
 }

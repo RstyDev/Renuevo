@@ -1,7 +1,7 @@
 use crate::backend::application::use_cases::users::register_user::RegisterUserUseCase;
 use crate::backend::infrastructure::repositories::surreal_user_repository::SurrealUserRepository;
 use crate::entities::{
-    Bautismo, Estado, EstadoCivil, Libro, Ministerio, Persona, Servicio, Sexo, TipoPresbitero,
+    Bautismo, Estado, EstadoCivil, Ministerio, Persona, Servicio, Sexo, TipoPresbitero,
 };
 use chrono::Local;
 use std::sync::Arc;

@@ -3,7 +3,7 @@ use crate::backend::infrastructure::db::models::users::PersonaDB;
 use crate::entities::{Bautismo, Servicio};
 // #[cfg(feature = "ssr")]
 use crate::error::{AppError, AppRes};
-use chrono::NaiveDate;
+use chrono::{Months, NaiveDate};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
@@ -82,6 +82,26 @@ impl Persona {
     }
     pub fn set_estado(&mut self, estado: Estado) {
         self.estado = estado;
+    }
+
+    pub fn is_possible_son_of(&self, other: &Persona) -> bool {
+        self.nacimiento>other.nacimiento.checked_add_months(Months::new(12*18)).unwrap()
+    }
+
+    #[cfg(feature = "ssr")]
+    pub fn to_db_no_pass(self) -> PersonaDB {
+        PersonaDB::new(
+            self.id,
+            String::new(),
+            self.nombre,
+            self.apellido,
+            self.sexo,
+            self.nacimiento,
+            self.estado_civil,
+            self.estado,
+            self.registrado,
+            None,
+        )
     }
     #[cfg(feature = "ssr")]
     pub fn to_db(self) -> AppRes<PersonaDB> {

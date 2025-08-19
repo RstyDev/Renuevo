@@ -30,8 +30,6 @@ impl Familia {
         }
     }
 
-
-
     pub fn id(&self) -> &Option<String> {
         &self.id
     }
@@ -76,6 +74,7 @@ impl Familia {
         self.hijos.push(hijo);
     }
 
+
     pub fn remove_hijo(&mut self, id: String) -> AppRes<()> {
         let res = self
             .hijos
@@ -91,24 +90,24 @@ impl Familia {
         }
     }
     #[cfg(feature = "ssr")]
-    pub fn to_db(self) -> AppRes<FamiliaDB> {
+    pub fn to_db(self) -> FamiliaDB {
         let mut hijos = vec![];
         for h in self.hijos {
-            hijos.push(h.to_db()?);
+            hijos.push(h.to_db_no_pass());
         }
-        Ok(FamiliaDB::new(
+        FamiliaDB::new(
             self.id,
             self.apellido,
             match self.padre {
                 None => None,
-                Some(a) => Some(a.to_db()?),
+                Some(a) => Some(a.to_db_no_pass()),
             },
             match self.madre {
                 None => None,
-                Some(a) => Some(a.to_db()?),
+                Some(a) => Some(a.to_db_no_pass()),
             },
             hijos,
-        ))
+        )
     }
     #[cfg(feature = "ssr")]
     pub fn from_db(familia: FamiliaDB) -> Self {

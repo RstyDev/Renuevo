@@ -189,22 +189,15 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
                                                  // }
     }
 
-    async fn update(&self, familia: Familia) -> AppRes<()> {
-        match familia.id() {
-            None => Err(AppError::DBErr(92, "Family sent without ID".to_string())),
-            Some(id) => {
-                //let resource = Resource::new(("","").into());
-                //match db.update::<Option<Hermano>>(resource.into()).content(user.into()).await {
-                match self
-                    .pool
-                    .upsert::<Option<FamiliaDB>>(("familias", id.clone()))
-                    .content(familia.to_db()?)
-                    .await
-                {
-                    Ok(_) => Ok(()),
-                    Err(e) => Err(AppError::DBErr(103, e.to_string())),
-                }
-            }
+    async fn update(&self, familia: Familia, id: String) -> AppRes<()> {
+        match self
+            .pool
+            .upsert::<Option<FamiliaDB>>(("familias", id.clone()))
+            .content(familia.to_db())
+            .await
+        {
+            Ok(_) => Ok(()),
+            Err(e) => Err(AppError::DBErr(103, e.to_string())),
         }
     }
 }

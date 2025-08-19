@@ -19,8 +19,9 @@ pub async fn all_families(repo: Data<SurrealFamilyRepository>) -> impl Responder
         .await
     {
         Ok(res) => {
-            println!("All Families handler: {:#?}",res);
-            HttpResponse::Ok().json(res) },
+            println!("All Families handler: {:#?}", res);
+            HttpResponse::Ok().json(res)
+        }
         Err(e) => {
             eprintln!("Error getting all familys: {:#?}", e);
             HttpResponse::InternalServerError().json(e.to_string())
@@ -37,11 +38,12 @@ pub async fn family_by_id(repo: Data<SurrealFamilyRepository>, id: Path<String>)
         Ok(res) => match res {
             None => {
                 println!("Handler Family not found");
-                HttpResponse::NotFound().json("Family not found") },
+                HttpResponse::NotFound().json("Family not found")
+            }
             Some(family) => {
-                println!("Family handler by ID: {:#?}",family);
+                println!("Family handler by ID: {:#?}", family);
                 HttpResponse::Ok().json(family)
-            },
+            }
         },
         Err(e) => {
             eprintln!("Error finding family {:#?}", e);
@@ -60,7 +62,8 @@ pub async fn delete_family(
     {
         Ok(_) => {
             println!("Deleted family");
-            HttpResponse::NoContent().finish() },
+            HttpResponse::NoContent().finish()
+        }
         Err(e) => {
             eprintln!("Error while deleting family: {:?}", e);
             HttpResponse::InternalServerError().json(e)
@@ -75,7 +78,7 @@ pub async fn update_family(
 ) -> impl Responder {
     let repo = repo.into_inner();
     match UpdateFamilyUseCase::new(repo.clone())
-        .update(input.into_inner())
+        .update(input.into_inner(),id.into_inner())
         .await
     {
         Ok(family) => {
@@ -100,7 +103,8 @@ pub async fn register_family(
     {
         Ok(_) => {
             println!("Added Family");
-            HttpResponse::NoContent().finish() },
+            HttpResponse::NoContent().finish()
+        }
         Err(e) => {
             eprintln!("Error registering family: {:?}", e);
             HttpResponse::InternalServerError().body("Please try again")

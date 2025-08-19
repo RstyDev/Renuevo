@@ -1,4 +1,4 @@
-use crate::entities::{Estado, EstadoCivil, Libro, Sexo};
+use crate::entities::{Estado, EstadoCivil, Sexo};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;

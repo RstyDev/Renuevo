@@ -3,8 +3,7 @@ use crate::frontend::{
     components::footer::Footer,
     lib::{log, request},
     pages::{
-        login::Login, miembros::Miembros, ministerio::Ministerio,
-        quienes_somos::QuienesSomos,
+        login::Login, miembros::Miembros, ministerio::Ministerio, quienes_somos::QuienesSomos,
     },
     structs::{Auth, Tabs},
 };
