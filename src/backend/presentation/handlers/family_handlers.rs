@@ -78,7 +78,7 @@ pub async fn update_family(
 ) -> impl Responder {
     let repo = repo.into_inner();
     match UpdateFamilyUseCase::new(repo.clone())
-        .update(input.into_inner(),id.into_inner())
+        .update(input.into_inner(), id.into_inner())
         .await
     {
         Ok(family) => {

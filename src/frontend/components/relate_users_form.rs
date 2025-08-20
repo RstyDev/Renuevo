@@ -29,28 +29,43 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
     let hijos_disponibles: ReadSignal<Vec<Persona>> = create_selector(move || {
         let miembros = miembros.get_clone_untracked();
         let familia_actual = familia_actual.get_clone();
-        let padre = familia_actual.as_ref().map(|f|f.padre().clone()).flatten();
+        let padre = familia_actual.as_ref().map(|f| f.padre().clone()).flatten();
         // let padre = padre_id.get_clone();
-        let madre = familia_actual.as_ref().map(|f|f.madre().clone()).flatten();
-        log(NAME,34,&familia_actual);
-        let hijos_actual = familia_actual.map(|f|f.hijos().clone()).unwrap_or_default();
-        miembros.clone().unwrap_or_default().into_iter().filter(|m|{
-            (padre.is_some()||madre.is_some())&&
-            padre.as_ref().map(|p|!p.id().unwrap().eq(m.id().unwrap())&&m.is_possible_son_of(p)).unwrap_or(true) &&
-                madre.as_ref().map(|madre|!madre.id().unwrap().eq(m.id().unwrap())&&m.is_possible_son_of(madre)).unwrap_or(true)&&
-                !hijos_actual.contains(m)
-        }).collect()
+        let madre = familia_actual.as_ref().map(|f| f.madre().clone()).flatten();
+        log(NAME, 34, &familia_actual);
+        let hijos_actual = familia_actual
+            .map(|f| f.hijos().clone())
+            .unwrap_or_default();
+        miembros
+            .clone()
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|m| {
+                (padre.is_some() || madre.is_some())
+                    && padre
+                        .as_ref()
+                        .map(|p| !p.id().unwrap().eq(m.id().unwrap()) && m.is_possible_son_of(p))
+                        .unwrap_or(true)
+                    && madre
+                        .as_ref()
+                        .map(|madre| {
+                            !madre.id().unwrap().eq(m.id().unwrap()) && m.is_possible_son_of(madre)
+                        })
+                        .unwrap_or(true)
+                    && !hijos_actual.contains(m)
+            })
+            .collect()
     });
 
-    create_effect(move|| {
+    create_effect(move || {
         let hijos = hijos_disponibles.get_clone();
         log(NAME, 42, &hijos);
-        if hijos.len()>0{
+        if hijos.len() > 0 {
             nuevo_hijo_id.set(hijos.get(0).unwrap().id().unwrap().to_owned());
         }
     });
 
-    let options = view!{
+    let options = view! {
         Keyed(
             list = hombres,
             view = |hombre|{
@@ -63,7 +78,7 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
         )
     };
 
-    let options_mujeres = view!{
+    let options_mujeres = view! {
         Keyed(
             list = mujeres,
             view = |mujer|{
@@ -157,21 +172,28 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
         })
     };
 
-    let add_hijo_fn = move |_|{
-        let familia = match familia_actual.get_clone(){
+    let add_hijo_fn = move |_| {
+        let familia = match familia_actual.get_clone() {
             Some(mut familia) => {
-                log(NAME,160,&nuevo_hijo_id.get_clone());
-                log(NAME,161,&hijos_disponibles);
-                let hijo_actual = hijos_disponibles.get_clone().into_iter().find(|hijo|nuevo_hijo_id.get_clone().eq(hijo.id().as_ref().unwrap().to_owned())).unwrap();
+                log(NAME, 160, &nuevo_hijo_id.get_clone());
+                log(NAME, 161, &hijos_disponibles);
+                let hijo_actual = hijos_disponibles
+                    .get_clone()
+                    .into_iter()
+                    .find(|hijo| {
+                        nuevo_hijo_id
+                            .get_clone()
+                            .eq(hijo.id().as_ref().unwrap().to_owned())
+                    })
+                    .unwrap();
                 familia.add_hijo(hijo_actual);
                 Some(familia.to_owned())
-            },
-            None=> None,
+            }
+            None => None,
         };
         familia_actual.set(familia);
-
     };
-    create_effect(move|| log(NAME,169,&nuevo_hijo_id.get_clone()));
+    create_effect(move || log(NAME, 169, &nuevo_hijo_id.get_clone()));
     view! {
         section(id="padres"){
             article(){

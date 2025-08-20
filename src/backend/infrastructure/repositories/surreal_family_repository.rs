@@ -9,6 +9,7 @@ use crate::{
     error::{AppError, AppRes},
 };
 use std::sync::Arc;
+use surrealdb::sql::Thing;
 
 #[derive(Clone)]
 pub struct SurrealFamilyRepository {
@@ -190,52 +191,23 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
     }
 
     async fn update(&self, familia: Familia, id: String) -> AppRes<()> {
-        match self
+        let mut res = self
             .pool
-            .upsert::<Option<FamiliaDB>>(("familias", id.clone()))
-            .content(familia.to_db())
+            .query(
+                r#"
+            SELECT VALUE id FROM ONLY type::thing($familia);
+        "#,
+            )
+            .bind(("familia", format!("familias:{}", id)))
             .await
+            .map_err(|e| AppError::DBErr(203, e.to_string()))?;
+        if res
+            .take::<Option<Thing>>(0)
+            .map_err(|e| AppError::DBErr(206, e.to_string()))?
+            .is_some()
         {
-            Ok(_) => Ok(()),
-            Err(e) => Err(AppError::DBErr(103, e.to_string())),
+            self.save(&familia).await?;
         }
+        Ok(())
     }
 }
-
-// async fn get_familia_from_db(pool: DBPool, familia: FamiliaDB) -> AppRes<Familia> {
-// //     pool.query(r#"
-// //         SELECT
-// // "#)
-//     let mut padre = None;
-//     if let Some(padre_db) = familia.padre() {
-//         match pool
-//             .select::<Option<PersonaDB>>((padre_db.tb.as_str(), padre_db.id.to_string()))
-//             .await
-//         {
-//             Ok(padre_db) => padre = padre_db,
-//             Err(e) => return Err(AppError::DBErr(94, e.to_string())),
-//         }
-//     }
-//     let mut madre = None;
-//     if let Some(madre_db) = familia.madre() {
-//         match pool
-//             .select::<Option<PersonaDB>>((madre_db.tb.as_str(), madre_db.id.to_string()))
-//             .await
-//         {
-//             Ok(madre_db) => madre = madre_db,
-//             Err(e) => return Err(AppError::DBErr(94, e.to_string())),
-//         }
-//     }
-//     let mut hijos = vec![];
-//     for hijo_db in familia.hijos() {
-//         match pool
-//             .select::<Option<PersonaDB>>((hijo_db.tb.as_str(), hijo_db.id.to_string()))
-//             .await
-//         {
-//             Ok(Some(hijo_db)) => hijos.push(hijo_db),
-//             Ok(None) => {}
-//             Err(e) => return Err(AppError::DBErr(94, e.to_string())),
-//         }
-//     }
-//     Ok(Familia::from_db(familia, padre, madre, hijos))
-// }

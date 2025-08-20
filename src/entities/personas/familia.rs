@@ -74,7 +74,6 @@ impl Familia {
         self.hijos.push(hijo);
     }
 
-
     pub fn remove_hijo(&mut self, id: String) -> AppRes<()> {
         let res = self
             .hijos

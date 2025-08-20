@@ -17,6 +17,6 @@ impl<T: FamilyRepository> UpdateFamilyUseCase<T> {
     }
 
     pub async fn update(&self, persona: Familia, id: String) -> AppRes<()> {
-        self.family_service.update(persona,id).await
+        self.family_service.update(persona, id).await
     }
 }

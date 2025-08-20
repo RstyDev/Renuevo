@@ -85,7 +85,11 @@ impl Persona {
     }
 
     pub fn is_possible_son_of(&self, other: &Persona) -> bool {
-        self.nacimiento>other.nacimiento.checked_add_months(Months::new(12*18)).unwrap()
+        self.nacimiento
+            > other
+                .nacimiento
+                .checked_add_months(Months::new(12 * 18))
+                .unwrap()
     }
 
     #[cfg(feature = "ssr")]

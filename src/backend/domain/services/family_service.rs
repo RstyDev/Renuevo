@@ -25,6 +25,6 @@ impl<T: FamilyRepository> FamilyService<T> {
         self.family_repo.get_all().await
     }
     pub async fn update(&self, familia: Familia, id: String) -> AppRes<()> {
-        self.family_repo.update(familia,id).await
+        self.family_repo.update(familia, id).await
     }
 }
