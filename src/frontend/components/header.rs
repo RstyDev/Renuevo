@@ -1,19 +1,19 @@
 use crate::entities::{Estado, Persona};
 use crate::frontend::lib::log;
-use crate::frontend::structs::{Auth, Tabs};
+use crate::frontend::structs::{Auth, Tabs, Global};
 use sycamore::prelude::*;
 use sycamore::reactive::Signal;
 const NAME: &'static str = "Header";
 
 #[component(inline_props)]
-pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Persona>>) -> View {
+pub fn Header(global: Signal<Global>, tabs: Signal<Tabs>, hermano: Signal<Option<Persona>>) -> View {
     let show_menu = create_signal(false);
     let sh_menu = show_menu.clone();
     let show_ministerio = create_signal(false);
     let show_user = create_signal(false);
     let show_nosotros = create_signal(false);
     let set_login_tab = move |_| tabs.set(Tabs::Login);
-    let auth_selector = create_selector(move || auth.get_clone());
+    let auth_selector = create_selector(move || global.get_clone().auth);
 
     let ministerio_selector = create_selector(move || {
         hermano
@@ -39,11 +39,10 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
         sh2.set_silent(false);
         sh3.set_silent(false);
     };
-    create_memo(move || match auth.get_clone() {
+    create_memo(move || match global.get_clone().auth {
         Auth::NotLogged => hide_all_dropdowns(),
         _ => (),
     });
-
     view! {
         header(){
             img(id="logo", title="logo", src="public/RENUEVO.png"){}
@@ -65,7 +64,8 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
                                     ul(id="dropdown_user"){
                                         li(){a(){"Profile"}}
                                         li(on:click = move |_| {
-                                            auth.set(Auth::NotLogged);
+                                            global.set_fn(|_|Global{auth:Auth::NotLogged});
+                                            // global.set(Global{auth:Auth::NotLogged,..global.get_clone()});
                                     }){a(){"Salir"}}
                                     }
                                 }
@@ -81,7 +81,11 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
             }){
                 div(class="modal-content"){
                     ul(){
-                        li(on:click=move |_|{tabs.set(Tabs::Inicio)}){a(){"Inicio"}}
+                        li(on:click=move |_|{
+                            // let loc_global = global.get_clone();
+
+                            tabs.set(Tabs::Inicio)
+                        }){a(){"Inicio"}}
                         li(on:click=move |_|{show_nosotros.set(true)}){a(){"Nosotros"}}
                         div(id="dropdown",class=format!("modal-nosotros {}", show_nosotros.get().to_string()),on:click=move |_|{
                             show_nosotros.set(false);

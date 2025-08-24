@@ -6,7 +6,7 @@ use crate::frontend::components::{
 };
 use crate::frontend::{
     lib::{log, refresh_users, request},
-    structs::Auth,
+    structs::Global,
 };
 use async_std::task::block_on;
 use reqwest::Method;
@@ -15,7 +15,7 @@ use sycamore::prelude::*;
 const NAME: &'static str = "Edit User Form";
 
 #[component(inline_props)]
-pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
+pub fn EditUserForm(global: Signal<Global>, miembros: Signal<Option<Vec<Persona>>>) -> View {
     let form = create_signal(None::<Persona>);
     let action = create_signal(ActionOnUser::None);
     let act2 = action.clone();
@@ -79,7 +79,7 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
                         log(NAME, 86, &user.id());
                         let result = request::<Persona>(
                             format!("api/v1/users/{}", user.id().unwrap()),
-                            auth.clone(),
+                            global.clone(),
                             Method::PUT,
                             Some(user),
                             true,
@@ -90,7 +90,7 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
                         // apellido.set(String::new());
                         // estado_civil.set(String::new());
                         // nacimiento.set(String::new());
-                        refresh_users(miembros.clone(), auth.clone()).await;
+                        refresh_users(miembros.clone(), global.clone()).await;
                     });
                 }
                 None => (),
@@ -212,6 +212,6 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) 
             },
             None => view!{},
         })
-        UserCards(auth = auth, miembros = miembros, mode = mode)
+        UserCards(global = global, miembros = miembros, mode = mode)
     }
 }

@@ -6,7 +6,7 @@ use crate::{
         components::header::Header,
         lib::{rfc_7231, HOST},
         pages::main_page::MainPage,
-        structs::{Auth, Tabs},
+        structs::{Auth, Tabs, Global, NotificationProps},
     },
 };
 use async_std::task::block_on;
@@ -21,12 +21,13 @@ pub fn App() -> View {
     let window = web_sys::window().unwrap();
     let document = window.document().unwrap();
     let html_document = document.dyn_into::<web_sys::HtmlDocument>().unwrap();
-    let logged = create_signal(Auth::NotLogged);
-    let error_message = create_signal(String::new());
+    let global = create_signal(Global{ auth: Auth::NotLogged });
+    let error_message = create_signal(NotificationProps::default());
     let tab = create_signal(Tabs::Inicio);
     let persona = create_signal(None);
+
     let cookie = html_document.cookie().unwrap();
-    create_memo(move || match logged.get_clone() {
+    create_memo(move || match global.get_clone().auth {
         Auth::NotLogged => {
             html_document.set_cookie(&format!("token={}", "")).unwrap();
             html_document
@@ -52,7 +53,7 @@ pub fn App() -> View {
                 .unwrap();
         }
     });
-    let logged2 = logged.clone();
+    let global2 = global.clone();
     block_on(async move {
         match cookie.split("refresh=").nth(1) {
             Some(first_part) => {
@@ -75,11 +76,13 @@ pub fn App() -> View {
                         Err(e) => Err(AppError::HttpErr(75, e.to_string())),
                     };
                     if let Ok(refresh_result) = res {
-                        logged2.set(Auth::Logged(LoginResult {
+                        global2.set(Global {
+                            auth: Auth::Logged(LoginResult {
                             id: refresh_result.id,
                             token: refresh_result.token,
                             refresh: token.to_string(),
-                        }));
+                        })
+                    });
                     }
                 }
             }
@@ -89,8 +92,8 @@ pub fn App() -> View {
 
     view! {
         article(id="main"){
-            Header(auth = logged.clone(),tabs = tab.clone(), hermano = persona.clone())
-            MainPage(auth = logged.clone(), tab = tab, resource = persona, error_message = error_message)
+            Header(global = global.clone(),tabs = tab.clone(), hermano = persona.clone())
+            MainPage(global = global.clone(), tab = tab, resource = persona, error_message = error_message)
         }
     }
 }

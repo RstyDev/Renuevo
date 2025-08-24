@@ -1,10 +1,11 @@
+#[allow(unexpected_cfgs)]
 use crate::entities::{Estado, Familia};
 
 use crate::{
     entities::{Persona, Sexo},
     frontend::{
         lib::{log, request},
-        structs::Auth,
+        structs::Global,
     },
 };
 use async_std::task::block_on;
@@ -15,7 +16,7 @@ use sycamore::prelude::*;
 const NAME: &'static str = "Relate Users";
 
 #[component(inline_props)]
-pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
+pub fn RelateUsersForm(global: Signal<Global>, miembros: Signal<Option<Vec<Persona>>>) -> View {
     let hombres = create_selector(move || {
         miembros.get_clone().map(|m|{m.into_iter().filter(|p|match p.estado(){Estado::Miembro {..}|Estado::Diacono {..}|Estado::Presbitero {..}=>true,_=>false}&&p.sexo() == Sexo::Masculino&&p.nacimiento()<=Local::now().date_naive().checked_sub_months(Months::new(12*18)).unwrap()).collect::<Vec<Persona>>()}).unwrap_or_default()
     });
@@ -98,7 +99,7 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
             log(NAME, 30, &padre_id);
             let familia = match request::<Familia>(
                 format!("api/v1/families/{}", padre_id.get_clone()),
-                auth.clone(),
+                global.clone(),
                 Method::GET,
                 None::<bool>,
                 true,
@@ -145,7 +146,7 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
                 None => {
                     familia = match request::<Familia>(
                         format!("api/v1/families/{}", padre_id.get_clone()),
-                        auth.clone(),
+                        global.clone(),
                         Method::GET,
                         None::<bool>,
                         true,
@@ -212,7 +213,7 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
             }
         }
         section(id="hijos"){
-            p(){"Hijos"}
+            p(){"Hijos:"}
             (familia_actual.get_clone().map(|f|{
                 f.hijos().into_iter().cloned().map(|h|{
                     let id = h.id().unwrap().clone();
@@ -248,7 +249,8 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
                 (match hijos_disponibles.with(|hijos|hijos.len()){
                     0=>view!{},
                     _=>view!{
-                        select(bind:value=nuevo_hijo_id){
+                        label(r#for="nuevo_hijo"){"Agregar:"}
+                        select(id="nuevo_hijo",bind:value=nuevo_hijo_id){
                             Keyed(
                                 list = hijos_disponibles,
                                 view = |hijo|{
@@ -266,15 +268,31 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
             }
             button(on:click=move|_|{
                 block_on(async move {
-                    let familia = request::<Familia>(
-                        format!("api/v1/families/{}", padre_id.get_clone()),
-                        auth.clone(),
-                        Method::PUT,
-                        familia_actual.get_clone(),
-                        true,
-                    )
-                    .await;
-                    log(NAME,255,&familia)
+                    let familia = familia_actual.get_clone().unwrap();
+                    match familia.id() {
+                        Some(id) => {
+                            let familia = request::<Familia>(
+                                format!("api/v1/families/{}", id),
+                                global.clone(),
+                                Method::PUT,
+                                familia_actual.get_clone(),
+                                true,
+                            )
+                            .await;
+                            log(NAME,280,&familia)
+                        }
+                        None => {
+                            let familia = request::<Familia>(
+                                format!("api/v1/families/"),
+                                global.clone(),
+                                Method::POST,
+                                familia_actual.get_clone(),
+                                true,
+                            )
+                            .await;
+                            log(NAME,291,&familia)
+                        }
+                    }
                 })
             }){"Guardar"}
         }

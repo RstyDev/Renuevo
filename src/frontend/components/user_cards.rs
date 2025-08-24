@@ -1,35 +1,20 @@
 use crate::entities::Persona;
 use crate::frontend::{
     components::user_card::{ActionOnUser, Mode, UserCard},
-    lib::request,
-    structs::Auth,
+    lib::{request, refresh_users},
+    structs::Global,
 };
 use async_std::task::block_on;
 use reqwest::Method;
 use sycamore::prelude::*;
 
-pub async fn refresh_users(
-    miembros: Signal<Option<Vec<Persona>>>,
-    auth: Signal<crate::frontend::structs::Auth>,
-) {
-    miembros.set(
-        crate::frontend::lib::request::<Vec<Persona>>(
-            "api/v1/users/",
-            auth,
-            Method::GET,
-            None::<bool>,
-            true,
-        )
-        .await
-        .unwrap(),
-    );
-}
+
 #[component(inline_props)]
-pub fn UserCards(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>, mode: Mode) -> View {
+pub fn UserCards(global: Signal<Global>, miembros: Signal<Option<Vec<Persona>>>, mode: Mode) -> View {
     let m1 = miembros.clone();
 
     block_on(async move {
-        refresh_users(miembros, auth.clone()).await;
+        refresh_users(miembros, global.clone()).await;
     });
     view! {
         (match miembros.get_clone() {
@@ -46,7 +31,7 @@ pub fn UserCards(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>, mod
                             ActionOnUser::Delete => block_on(async move {
                                 request::<bool>(
                                     format!("api/v1/users/{}",m2.id().unwrap()),
-                                    auth,
+                                    global,
                                     Method::DELETE,
                                     None::<bool>,
                                     false
@@ -54,7 +39,7 @@ pub fn UserCards(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>, mod
                                 .await
                                 .unwrap();
                                 action.set_silent(ActionOnUser::None);
-                                refresh_users(m1, auth.clone()).await;
+                                refresh_users(m1, global.clone()).await;
                             }),
                             _=>(),
                         }

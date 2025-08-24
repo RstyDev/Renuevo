@@ -1,6 +1,6 @@
 use crate::entities::{LoginResult, Persona, RefreshResult};
 use crate::error::{AppError, AppRes};
-use crate::frontend::structs::Auth;
+use crate::frontend::structs::{Auth, Global};
 use chrono::{DateTime, Datelike, Utc};
 use reqwest::{Method, StatusCode};
 use serde::de::DeserializeOwned;
@@ -10,15 +10,13 @@ use std::sync::LazyLock;
 use sycamore::prelude::Signal;
 use sycamore::prelude::*;
 
-const NAME: &'static str = "Lib";
+// const NAME: &'static str = "Lib";
 
 pub static HOST: LazyLock<String> = LazyLock::new(|| std::env!("BACKEND").to_string());
 
-//const HOST: &str = "http://localhost:8088/";
-
-pub async fn refresh_users(miembros: Signal<Option<Vec<Persona>>>, auth: Signal<Auth>) {
+pub async fn refresh_users(miembros: Signal<Option<Vec<Persona>>>, global: Signal<Global>) {
     miembros.set(
-        request::<Vec<Persona>>("api/v1/users/", auth, Method::GET, None::<bool>, true)
+        request::<Vec<Persona>>("api/v1/users/", global, Method::GET, None::<bool>, true)
             .await
             .unwrap(),
     );
@@ -38,7 +36,7 @@ async fn fetch<T: DeserializeOwned>(
         None => req.send().await,
         Some(body) => req.json(&body).send().await,
     };
-    log(NAME, 41, &res);
+    // log(NAME, 41, &res);
     match res {
         Ok(r) => match r.status() {
             StatusCode::OK => {
@@ -78,15 +76,15 @@ pub fn rfc_7231(date: DateTime<Utc>) -> String {
 }
 pub async fn request<T: DeserializeOwned>(
     url: impl AsRef<str>,
-    login: Signal<Auth>,
+    login: Signal<Global>,
     method: Method,
     body: Option<impl Serialize + ?Sized + Clone>,
     expects: bool,
 ) -> AppRes<Option<T>> {
-    match login.get_clone_untracked() {
+    match login.get_clone_untracked().auth {
         Auth::NotLogged => Err(AppError::HttpErr(73, String::from("Not logged in."))),
         Auth::Logged(_) => {
-            let auth = login.get_clone_untracked().unwrap().clone();
+            let auth = login.get_clone_untracked().auth.unwrap().clone();
             match fetch::<T>(
                 &format!("{}/{}", HOST.as_str(), url.as_ref()),
                 auth.token.clone(),
@@ -108,13 +106,15 @@ pub async fn request<T: DeserializeOwned>(
                     .await
                     {
                         Ok(refresh) => {
-                            log(NAME, 77, &refresh);
+                            // log(NAME, 77, &refresh);
                             login.set_fn(|result| {
-                                let result = result.unwrap();
-                                Auth::Logged(LoginResult {
+
+                                let auth = result.auth.unwrap();
+                                Global{
+                                    auth: Auth::Logged(LoginResult {
                                     token: refresh.as_ref().unwrap().token.clone(),
-                                    ..result.clone()
-                                })
+                                    ..auth.clone()
+                                })}
                             });
                             fetch::<T>(
                                 format!("{}/{}", HOST.as_str(), url.as_ref()).as_str(),
@@ -135,5 +135,5 @@ pub async fn request<T: DeserializeOwned>(
 }
 
 pub fn log<T: Debug>(file: &str, pos: u16, data: &T) {
-    console_log!("{} {}:\n{:?}", file, pos, data);
+    console_log!("{} {}:\n{:#?}", file, pos, data);
 }

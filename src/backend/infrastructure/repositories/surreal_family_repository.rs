@@ -75,11 +75,15 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
                                 String::from("La madre debe ser femenino"),
                             ));
                         }
-                        if familia.padre().is_none() {
-                            id = format!("familias:{}", local_id);
-                            apellido = hermana.apellido().to_string();
-                        } else {
-                            apellido = format!("{} {}", apellido, hermana.apellido());
+                        match familia.padre(){
+                            Some(ap) if !ap.apellido().eq_ignore_ascii_case(hermana.apellido()) => {
+                                apellido = format!("{} {}", apellido, hermana.apellido());
+                            },
+                            Some(ap) if ap.apellido().eq_ignore_ascii_case(hermana.apellido()) => (),
+                            _ => {
+                                id = format!("familias:{}", local_id);
+                                apellido = hermana.apellido().to_string();
+                            },
                         }
                         madre = Some(hermana)
                     }
@@ -201,13 +205,12 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
             .bind(("familia", format!("familias:{}", id)))
             .await
             .map_err(|e| AppError::DBErr(203, e.to_string()))?;
-        if res
+        match res
             .take::<Option<Thing>>(0)
             .map_err(|e| AppError::DBErr(206, e.to_string()))?
-            .is_some()
         {
-            self.save(&familia).await?;
+            Some(_) => { self.save(&familia).await?; Ok(()) },
+            None => Err(AppError::NotFound(209))
         }
-        Ok(())
     }
 }

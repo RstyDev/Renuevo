@@ -11,6 +11,7 @@ use actix_web::{
     web::{Data, Path},
     HttpResponse, Responder,
 };
+use crate::error::AppError;
 
 #[get("/")]
 pub async fn all_families(repo: Data<SurrealFamilyRepository>) -> impl Responder {
@@ -87,7 +88,10 @@ pub async fn update_family(
         }
         Err(e) => {
             println!("Error while updating family: {:#?}", e);
-            HttpResponse::InternalServerError().json(e)
+            match e {
+                AppError::NotFound(_) => HttpResponse::NotFound().json("Family not found"),
+                _ => HttpResponse::InternalServerError().json(e),
+            }
         }
     }
 }

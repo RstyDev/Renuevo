@@ -2,7 +2,7 @@ use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
 use crate::frontend::{
     components::{user_card::Mode, user_cards::UserCards},
     lib::{log, refresh_users, request},
-    structs::Auth,
+    structs::Global,
 };
 use async_std::task::block_on;
 use chrono::{Local, NaiveDate};
@@ -12,10 +12,10 @@ use web_sys::SubmitEvent;
 const NAME: &'static str = "Add User Form";
 
 #[component(inline_props)]
-pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
+pub fn AddUserForm(global: Signal<Global>, miembros: Signal<Option<Vec<Persona>>>) -> View {
     let miembros2 = miembros.clone();
     // block_on(async move {
-    //     refresh_users(miembros, auth.clone()).await;
+    //     refresh_users(miembros, global.clone()).await;
     // });
     let nombre = create_signal(String::new());
     let apellido = create_signal(String::new());
@@ -46,7 +46,7 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -
         block_on(async move {
             request::<bool>(
                 "api/v1/users/",
-                auth.clone(),
+                global.clone(),
                 Method::POST,
                 Some(persona),
                 false,
@@ -57,7 +57,7 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -
             apellido.set(String::new());
             estado_civil.set(String::new());
             nacimiento.set(String::new());
-            refresh_users(miembros2, auth.clone()).await;
+            refresh_users(miembros2, global.clone()).await;
         });
     };
     view! {
@@ -93,6 +93,6 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -
 
             input(r#type="submit", value="Agregar"){"Agregar"}
         }
-        UserCards(auth=auth.clone(),miembros=miembros.clone(),mode= Mode::View)
+        UserCards(global=global.clone(),miembros=miembros.clone(),mode= Mode::View)
     }
 }

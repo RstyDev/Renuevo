@@ -2,19 +2,19 @@ use crate::entities::Persona;
 use crate::frontend::{
     components::user_card::{ActionOnUser, Mode, UserCard},
     lib::request,
-    structs::Auth,
+    structs::Global,
 };
 use async_std::task::block_on;
 use reqwest::Method;
 use sycamore::prelude::*;
 
 #[component(inline_props)]
-pub fn Miembros(auth: Signal<Auth>) -> View {
+pub fn Miembros(global: Signal<Global>) -> View {
     let miembros = create_signal(None);
     let m1 = miembros.clone();
     block_on(async move {
         m1.set(
-            request::<Vec<Persona>>("api/v1/users/", auth, Method::GET, None::<bool>, true)
+            request::<Vec<Persona>>("api/v1/users/", global, Method::GET, None::<bool>, true)
                 .await
                 .unwrap(),
         );

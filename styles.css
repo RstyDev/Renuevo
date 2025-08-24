@@ -28,9 +28,17 @@
 /*  z-index: 0;*/
 /*}*/
 
-.error_message{
+.Error{
   color: red;
-  font-weight: 250;
+  font-weight: 300;
+}
+.Warning{
+  color: yellow;
+  font-weight: 300;
+}
+.Success{
+  color: green;
+  font-weight: 300;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

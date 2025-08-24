@@ -5,7 +5,7 @@ use crate::frontend::{
     pages::{
         login::Login, miembros::Miembros, ministerio::Ministerio, quienes_somos::QuienesSomos,
     },
-    structs::{Auth, Tabs},
+    structs::{Auth, Tabs, Global, NotificationProps},
 };
 use async_std::task::block_on;
 use reqwest::Method;
@@ -13,18 +13,18 @@ use sycamore::prelude::*;
 const NAME: &'static str = "Main Page";
 #[component(inline_props)]
 pub fn MainPage(
-    auth: Signal<Auth>,
+    global: Signal<Global>,
     tab: Signal<Tabs>,
     resource: Signal<Option<Persona>>,
-    error_message: Signal<String>,
+    error_message: Signal<NotificationProps>,
 ) -> View {
     let tab_selector = create_selector(move || tab.get_clone());
-    let auth_selector = create_selector(move || auth.get_clone());
+    let global_selector = create_selector(move || global.get_clone().auth);
     let r1 = resource.clone();
     create_memo(move || log(NAME, 23, &r1.get_clone()));
     // let resource_selector = create_selector(move || r1.get_clone());
 
-    create_memo(move || match auth.get_clone() {
+    create_memo(move || match global.get_clone().auth {
         Auth::NotLogged => {
             tab.set_silent(Tabs::Inicio);
             r1.set(None)
@@ -33,7 +33,7 @@ pub fn MainPage(
             r1.set(
                 request::<Persona>(
                     format!("api/v1/users/{}", login.id),
-                    auth,
+                    global,
                     Method::GET,
                     None::<bool>,
                     true,
@@ -43,9 +43,7 @@ pub fn MainPage(
             )
         }),
     });
-    // create_memo(move ||{
-    //     //console_log!("{:#?}", resource.get_clone());
-    // });
+
     view! {
         article(id="main_container"){
             (match tab_selector.get_clone(){
@@ -61,7 +59,7 @@ pub fn MainPage(
                             img(src="public/main_frame2.jpg",class="main_img",title="main_img_1")
                             img(src="public/main_frame3.jpg",class="main_img",title="main_img_1")
                             img(src="public/main_frame4.jpg",class="main_img",title="main_img_1")
-                            button(){"DOMINGOS 10H"}
+                            button(){"DOMINGOS 17H"}
                         }
                     }
                     article(id="main_visita"){
@@ -72,12 +70,12 @@ pub fn MainPage(
                 Tabs::QuienesSomos => view!{QuienesSomos()},
                 Tabs::Donar => view!{"Donar"},
                 Tabs::Miembros => view!{
-                    Miembros(auth = auth.clone())
+                    Miembros(global = global.clone())
                 },
-                Tabs::Ministerio(ministerio) => view!{Ministerio(auth = auth, ministerio = ministerio)},
+                Tabs::Ministerio(ministerio) => view!{Ministerio(global = global, ministerio = ministerio)},
                 Tabs::Login =>view!{
-                    (match auth_selector.get_clone(){
-                        Auth::NotLogged => view!{Login(logged= auth.clone(), error_message = error_message.clone())},
+                    (match global_selector.get_clone(){
+                        Auth::NotLogged => view!{Login(global= global.clone(), error_message = error_message.clone())},
                         Auth::Logged(_) => view!{},
                     })
                 }

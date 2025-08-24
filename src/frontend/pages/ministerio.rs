@@ -1,10 +1,10 @@
 use crate::entities::Ministerio;
-use crate::frontend::{pages::ministerios::*, structs::Auth};
+use crate::frontend::{pages::ministerios::*, structs::Global};
 use sycamore::prelude::*;
 
 #[component(inline_props)]
-pub fn Ministerio(auth: Signal<Auth>, ministerio: Ministerio) -> View {
-    let algo = match ministerio {
+pub fn Ministerio(global: Signal<Global>, ministerio: Ministerio) -> View {
+    let view = match ministerio {
         Ministerio::Sonido => view! {
             Sonido()
         },
@@ -30,11 +30,11 @@ pub fn Ministerio(auth: Signal<Auth>, ministerio: Ministerio) -> View {
             Palabra()
         },
         Ministerio::Presbiterado => view! {
-            Presbiterado(auth = auth)
+            Presbiterado(global = global)
         },
     };
 
     view! {
-        (algo)
+        (view)
     }
 }

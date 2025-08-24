@@ -1,17 +1,17 @@
 use crate::entities::Persona;
 use crate::frontend::components::{user_card::Mode, user_cards::UserCards};
-use crate::frontend::{lib::refresh_users, structs::Auth};
+use crate::frontend::{lib::refresh_users, structs::Global};
 use async_std::task::block_on;
 use sycamore::prelude::*;
 
 #[component(inline_props)]
-pub fn DeleteUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
+pub fn DeleteUserForm(global: Signal<Global>, miembros: Signal<Option<Vec<Persona>>>) -> View {
     let miembros2 = miembros.clone();
     block_on(async move {
-        refresh_users(miembros, auth.clone()).await;
+        refresh_users(miembros, global.clone()).await;
     });
 
     view! {
-        UserCards(auth = auth, miembros = miembros2, mode = Mode::Delete)
+        UserCards(global = global, miembros = miembros2, mode = Mode::Delete)
     }
 }
