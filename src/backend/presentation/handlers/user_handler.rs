@@ -1,11 +1,11 @@
 use crate::{
     backend::{
-        application::use_cases::users::{
-            delete_user::DeleteUserUseCase, get_all_users::GetAllUsersUseCase,
-            get_user_by_id::GetUserByIdUseCase, register_user::RegisterUserUseCase,
-            update_user::UpdateUserUseCase,
+        application::use_cases::{
+            DeleteUserUseCase, GetAllUsersUseCase,
+            GetUserByIdUseCase, RegisterUserUseCase,
+            UpdateUserUseCase,
         },
-        infrastructure::repositories::surreal_user_repository::SurrealUserRepository,
+        infrastructure::repositories::SurrealUserRepository,
     },
     entities::Persona,
 };

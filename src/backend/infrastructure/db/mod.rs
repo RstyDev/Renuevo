@@ -1,2 +1,5 @@
-pub mod connection;
-pub mod models;
+mod connection;
+mod models;
+
+pub use connection::*;
+pub use models::*;

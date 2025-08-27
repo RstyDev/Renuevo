@@ -1,5 +1,5 @@
 use crate::{
-    backend::domain::repositories::family_repository::FamilyRepository, entities::Familia,
+    backend::domain::repositories::FamilyRepository, entities::Familia,
     error::AppRes,
 };
 

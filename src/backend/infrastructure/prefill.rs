@@ -1,5 +1,5 @@
-use crate::backend::application::use_cases::users::register_user::RegisterUserUseCase;
-use crate::backend::infrastructure::repositories::surreal_user_repository::SurrealUserRepository;
+use crate::backend::application::use_cases::RegisterUserUseCase;
+use crate::backend::infrastructure::repositories::SurrealUserRepository;
 use crate::entities::{
     Bautismo, Estado, EstadoCivil, Ministerio, Persona, Servicio, Sexo, TipoPresbitero,
 };

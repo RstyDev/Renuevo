@@ -1,7 +1,7 @@
 use crate::frontend::{
     components::{
-        add_user_form::AddUserForm, delete_user_form::DeleteUserForm, edit_user_form::EditUserForm,
-        relate_users_form::RelateUsersForm,
+        AddUserForm, DeleteUserForm, EditUserForm,
+        RelateUsersForm,
     },
     lib::log,
     structs::Auth,

@@ -1,4 +1,5 @@
 mod libro;
-pub mod prestamo_libro;
+mod prestamo_libro;
 
 pub use libro::Libro;
+pub use prestamo_libro::*;

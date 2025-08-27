@@ -1,6 +1,6 @@
 use crate::entities::Persona;
 use crate::frontend::{
-    components::footer::Footer,
+    components::Footer,
     lib::{log, request},
     pages::{
         login::Login, miembros::Miembros, ministerio::Ministerio, quienes_somos::QuienesSomos,

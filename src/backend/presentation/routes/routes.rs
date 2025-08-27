@@ -1,8 +1,8 @@
-use crate::backend::presentation::handlers::family_handlers::{
+use crate::backend::presentation::handlers::{
     all_families, delete_family, family_by_id, register_family, update_family,
 };
-use crate::backend::presentation::handlers::root_handlers::{login, refresh_token, validator};
-use crate::backend::presentation::handlers::user_handler::{
+use crate::backend::presentation::handlers::{login, refresh_token, validator};
+use crate::backend::presentation::handlers::{
     all_users, delete_user, register_user_handler, update_user, user_by_id,
 };
 use actix_cors::Cors;

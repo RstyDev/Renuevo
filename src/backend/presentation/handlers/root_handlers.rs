@@ -1,4 +1,4 @@
-use crate::backend::infrastructure::db::{connection::DBPool, models::users::PersonaDB};
+use crate::backend::infrastructure::db::{DBPool, PersonaDB};
 use crate::{
     entities::{Claims, LoginForm, LoginResult, RefreshResult, TokenType},
     error::AppError,

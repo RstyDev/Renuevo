@@ -1,6 +1,6 @@
 use crate::{
     backend::domain::{
-        repositories::user_repository::UserRepository, services::user_service::UserService,
+        repositories::UserRepository, services::UserService,
     },
     entities::Persona,
     error::AppRes,

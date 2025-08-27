@@ -3,7 +3,7 @@ use crate::error::AppError;
 use crate::{
     entities::LoginResult,
     frontend::{
-        components::header::Header,
+        components::Header,
         lib::{rfc_7231, HOST},
         pages::main_page::MainPage,
         structs::{Auth, Tabs},

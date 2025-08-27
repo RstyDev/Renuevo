@@ -1,10 +1,10 @@
-use crate::backend::infrastructure::db::models::families::FamiliaDB;
-use crate::backend::infrastructure::db::models::users::PersonaDB;
+use crate::backend::infrastructure::db::FamiliaDB;
+use crate::backend::infrastructure::db::PersonaDB;
 use crate::entities::{Familia, Sexo};
 use crate::{
     backend::{
-        domain::repositories::family_repository::FamilyRepository,
-        infrastructure::db::connection::{establish_connection, DBPool},
+        domain::repositories::FamilyRepository,
+        infrastructure::db::{establish_connection, DBPool},
     },
     error::{AppError, AppRes},
 };

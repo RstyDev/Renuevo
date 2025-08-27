@@ -1,9 +1,9 @@
-use crate::backend::application::use_cases::family::delete_family::DeleteFamilyUseCase;
-use crate::backend::application::use_cases::family::get_all_families::GetAllFamiliesUseCase;
-use crate::backend::application::use_cases::family::get_family_by_id::GetFamilyByIdUseCase;
-use crate::backend::application::use_cases::family::save_family::RegisterFamilyUseCase;
-use crate::backend::application::use_cases::family::update_family::UpdateFamilyUseCase;
-use crate::backend::infrastructure::repositories::surreal_family_repository::SurrealFamilyRepository;
+use crate::backend::application::use_cases::DeleteFamilyUseCase;
+use crate::backend::application::use_cases::GetAllFamiliesUseCase;
+use crate::backend::application::use_cases::GetFamilyByIdUseCase;
+use crate::backend::application::use_cases::RegisterFamilyUseCase;
+use crate::backend::application::use_cases::UpdateFamilyUseCase;
+use crate::backend::infrastructure::repositories::SurrealFamilyRepository;
 use crate::entities::Familia;
 use actix_web::web::Json;
 use actix_web::{

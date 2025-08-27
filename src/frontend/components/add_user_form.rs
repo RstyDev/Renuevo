@@ -1,6 +1,6 @@
 use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
 use crate::frontend::{
-    components::{user_card::Mode, user_cards::UserCards},
+    components::{Mode, UserCards},
     lib::{log, refresh_users, request},
     structs::Auth,
 };

@@ -1,8 +1,8 @@
 use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
 use crate::frontend::components::{
-    state_form::StateForm,
-    user_card::{ActionOnUser, Mode},
-    user_cards::UserCards,
+    StateForm,
+    ActionOnUser, Mode,
+    UserCards,
 };
 use crate::frontend::{
     lib::{log, refresh_users, request},

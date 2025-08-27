@@ -2,8 +2,8 @@ use crate::{
     error::AppRes,
     {
         backend::domain::{
-            repositories::family_repository::FamilyRepository,
-            services::family_service::FamilyService,
+            repositories::FamilyRepository,
+            services::FamilyService,
         },
         entities::Familia,
     },

@@ -1,6 +1,6 @@
 use crate::entities::Persona;
 use crate::frontend::{
-    components::user_card::{ActionOnUser, Mode, UserCard},
+    components::{ActionOnUser, Mode, UserCard},
     lib::request,
     structs::Auth,
 };

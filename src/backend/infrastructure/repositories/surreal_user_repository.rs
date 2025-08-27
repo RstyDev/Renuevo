@@ -1,9 +1,9 @@
 use crate::{
     backend::{
-        domain::repositories::user_repository::UserRepository,
+        domain::repositories::UserRepository,
         infrastructure::db::{
-            connection::{establish_connection, DBPool},
-            models::users::PersonaDB,
+            establish_connection, DBPool,
+            PersonaDB,
         },
     },
     entities::Persona,

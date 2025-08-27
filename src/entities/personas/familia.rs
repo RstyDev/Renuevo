@@ -1,5 +1,5 @@
 #[cfg(feature = "ssr")]
-use crate::backend::infrastructure::db::models::families::FamiliaDB;
+use crate::backend::infrastructure::db::FamiliaDB;
 use crate::entities::Persona;
 use crate::error::{AppError, AppRes};
 use serde::{Deserialize, Serialize};

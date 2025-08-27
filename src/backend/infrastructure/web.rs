@@ -1,9 +1,9 @@
-use crate::backend::infrastructure::db::connection::establish_connection;
+use crate::backend::infrastructure::db::establish_connection;
 use crate::backend::infrastructure::prefill::prefill;
-use crate::backend::infrastructure::repositories::surreal_family_repository::SurrealFamilyRepository;
+use crate::backend::infrastructure::repositories::SurrealFamilyRepository;
 use crate::backend::{
-    infrastructure::repositories::surreal_user_repository::SurrealUserRepository,
-    presentation::routes::routes::root_routes,
+    infrastructure::repositories::SurrealUserRepository,
+    presentation::routes::root_routes,
 };
 use actix_cors::Cors;
 use actix_web::middleware::Logger;

@@ -1,5 +1,5 @@
 #[cfg(feature = "ssr")]
-use crate::backend::infrastructure::db::models::users::PersonaDB;
+use crate::backend::infrastructure::db::PersonaDB;
 use crate::entities::{Bautismo, Servicio};
 // #[cfg(feature = "ssr")]
 use crate::error::{AppError, AppRes};
