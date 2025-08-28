@@ -15,12 +15,12 @@ use sycamore::prelude::*;
 const NAME: &'static str = "Relate Users";
 
 #[component(inline_props)]
-pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
+pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Vec<Persona>>) -> View {
     let hombres = create_selector(move || {
-        miembros.get_clone().map(|m|{m.into_iter().filter(|p|match p.estado(){Estado::Miembro {..}|Estado::Diacono {..}|Estado::Presbitero {..}=>true,_=>false}&&p.sexo() == Sexo::Masculino&&p.nacimiento()<=Local::now().date_naive().checked_sub_months(Months::new(12*18)).unwrap()).collect::<Vec<Persona>>()}).unwrap_or_default()
+        miembros.get_clone().into_iter().filter(|p|match p.estado(){Estado::Miembro {..}|Estado::Diacono {..}|Estado::Presbitero {..}=>true,_=>false}&&p.sexo() == Sexo::Masculino&&p.nacimiento()<=Local::now().date_naive().checked_sub_months(Months::new(12*18)).unwrap()).collect::<Vec<Persona>>()
     });
     let mujeres = create_selector(move || {
-        miembros.get_clone().map(|m|{m.into_iter().filter(|p|match p.estado(){Estado::Miembro {..}=>true,_=>false}&&p.sexo() == Sexo::Femenino&&p.nacimiento()<=Local::now().date_naive().checked_sub_months(Months::new(12*18)).unwrap()).collect::<Vec<Persona>>()}).unwrap_or_default()
+        miembros.get_clone().into_iter().filter(|p|match p.estado(){Estado::Miembro {..}=>true,_=>false}&&p.sexo() == Sexo::Femenino&&p.nacimiento()<=Local::now().date_naive().checked_sub_months(Months::new(12*18)).unwrap()).collect::<Vec<Persona>>()
     });
     let padre_id = create_signal(String::new());
     let madre_id = create_signal(String::new());
@@ -38,7 +38,6 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>
             .unwrap_or_default();
         miembros
             .clone()
-            .unwrap_or_default()
             .into_iter()
             .filter(|m| {
                 (padre.is_some() || madre.is_some())

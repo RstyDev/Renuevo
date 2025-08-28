@@ -1,7 +1,5 @@
 use crate::{
-    backend::domain::{
-        repositories::UserRepository, services::UserService,
-    },
+    backend::domain::{repositories::UserRepository, services::UserService},
     entities::Persona,
     error::AppRes,
 };
@@ -18,5 +16,11 @@ impl<T: UserRepository> UpdateUserUseCase<T> {
 
     pub async fn update(&self, persona: Persona) -> AppRes<Persona> {
         self.user_service.update(persona).await
+    }
+    pub async fn is_id_pass_correct(&self, id: &str, password: &str) -> AppRes<bool> {
+        self.user_service.is_id_pass_correct(id,password).await
+    }
+    pub async fn update_password(&self, id: &str, password: &str) -> AppRes<()> {
+        self.user_service.update_password(id, password).await
     }
 }

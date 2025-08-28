@@ -1,10 +1,7 @@
 use crate::{
     backend::{
         domain::repositories::UserRepository,
-        infrastructure::db::{
-            establish_connection, DBPool,
-            PersonaDB,
-        },
+        infrastructure::db::{establish_connection, DBPool, PersonaDB},
     },
     entities::Persona,
     error::{AppError, AppRes},
@@ -90,6 +87,55 @@ impl UserRepository for Arc<SurrealUserRepository> {
         }
     }
 
+//LET $user = (SELECT * FROM ONLY $id WHERE password = crypto::sha512($pass));
+//RETURN IF array::len($user) > 0 THEN $user ELSE NONE END;
+    async fn is_id_pass_correct(&self, id: &str, password: &str) -> AppRes<bool> {
+        // println!("user repo 91: {}",password);
+        // let thing = format!("personas:{}",id);
+
+        match self.pool.query("RETURN crypto::sha512($pass)").bind(("pass",password.to_owned())).await {
+            Ok(mut res) => {
+                let pass = res.take::<Option<String>>(0).map_err(|e| AppError::DBErr(97, e.to_string()))?.unwrap();
+                match self.get_by_id_with_password(id).await {
+                    Ok(option) => {
+                        match option {
+                            Some(user) => {
+                                if pass.eq(user.password().unwrap()) {
+                                    Ok(true)
+                                } else {
+                                    Ok(false)
+                                }
+                            }
+                            None => Ok(false),
+                        }
+                    }
+                    Err(e) => Err(AppError::DBErr(102, e.to_string())),
+                }
+                // println!("{:#?}", pass);
+                //
+                // Ok(None)
+            }
+            Err(e) => Err(AppError::DBErr(108, e.to_string())),
+        }
+
+        // match self.pool.query(r#"
+        //     LET $user = (SELECT * FROM ONLY type::thing($id) WHERE password = crypto::sha512($pass));
+        //     RETURN $user;
+        //     RETURN IF $user THEN $user ELSE NONE END;
+        // "#).bind(("id",format!("personas:{}",id.to_owned()))).bind(("pass",password.to_owned())).await {
+        //     Ok(mut response) => {
+        //         println!("user repo 126 {:#?}", response);
+        //         let res = response.take::<Option<PersonaDB>>(0).map_err(|e| AppError::DBErr(99, e.to_string()));
+        //         println!("user repo 96 {:#?}",res);
+        //         res.map(|option|option.map(|p|Persona::from_db(p.to_owned())))
+        //     },
+        //     Err(e) => {
+        //         println!("user repo 100 {:#?}",e);
+        //         Err(AppError::DBErr(100, e.to_string()))
+        //     }
+        // }
+    }
+
     async fn get_by_id_with_password(&self, id: &str) -> AppRes<Option<Persona>> {
         match self
             .pool
@@ -117,5 +163,29 @@ impl UserRepository for Arc<SurrealUserRepository> {
                 }
             }
         }
+    }
+
+    async fn update_password(&self, id: &str, password: &str) -> AppRes<()> {
+        println!("user repo 155 {}", id);
+        match self.pool.query(r#"
+                   UPDATE type::thing($id) SET password = crypto::sha512($pass);
+               "#).bind(("id",format!("personas:{}",id.to_owned()))).bind(("pass",password.to_owned())).await {
+            Ok(a) => {
+                println!("user repo 167 {:#?}", a);
+                Ok(())
+            },
+            Err(e) => {
+                println!("user repo 173: {}", e);
+                Err(AppError::DBErr(134, e.to_string()))
+            },
+        }
+        // match self
+        //     .pool
+        //     .upsert::<Option<PersonaDB>>(("personas", id.clone()))
+        //     .content(persona.to_db().unwrap())
+        //     .await
+        // {
+        // }
+
     }
 }

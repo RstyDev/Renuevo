@@ -1,7 +1,4 @@
-use crate::{
-    backend::domain::repositories::FamilyRepository, entities::Familia,
-    error::AppRes,
-};
+use crate::{backend::domain::repositories::FamilyRepository, entities::Familia, error::AppRes};
 
 #[derive(Clone)]
 pub struct FamilyService<T: FamilyRepository> {

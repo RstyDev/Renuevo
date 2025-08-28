@@ -9,7 +9,7 @@ use reqwest::Method;
 use sycamore::prelude::*;
 
 pub async fn refresh_users(
-    miembros: Signal<Option<Vec<Persona>>>,
+    miembros: Signal<Vec<Persona>>,
     auth: Signal<crate::frontend::structs::Auth>,
 ) {
     miembros.set(
@@ -21,53 +21,44 @@ pub async fn refresh_users(
             true,
         )
         .await
-        .unwrap(),
+        .unwrap()
+        .unwrap_or_default(),
     );
 }
 #[component(inline_props)]
-pub fn UserCards(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>, mode: Mode) -> View {
+pub fn UserCards(auth: Signal<Auth>, miembros: Signal<Vec<Persona>>, mode: Mode) -> View {
     let m1 = miembros.clone();
 
     block_on(async move {
         refresh_users(miembros, auth.clone()).await;
     });
     view! {
-        (match miembros.get_clone() {
-            Some(miembros) => {
-                let iter = miembros.into_iter().map(|m|{
-                    let mode = mode.to_owned();
-                    let action = create_signal(ActionOnUser::None);
-
-                    let m2 = m.clone();
-                    create_memo(move || {
-                        let m2 = m2.to_owned();
-
-                        match action.get_clone(){
-                            ActionOnUser::Delete => block_on(async move {
-                                request::<bool>(
-                                    format!("api/v1/users/{}",m2.id().unwrap()),
-                                    auth,
-                                    Method::DELETE,
-                                    None::<bool>,
-                                    false
-                                )
-                                .await
-                                .unwrap();
-                                action.set_silent(ActionOnUser::None);
-                                refresh_users(m1, auth.clone()).await;
-                            }),
-                            _=>(),
-                        }
-                    });
-                    view!{li(){UserCard(user=m, mode = mode.clone(), action=action)}}
-                }).collect::<Vec<View>>();
-                view!{
-                    ul(id = "miembros"){
-                        (iter)
+        ul(id = "miembros"){
+            (miembros.get_clone().into_iter().map(|m|{
+                let mode = mode.to_owned();
+                let action = create_signal(ActionOnUser::None);
+                let m2 = m.clone();
+                create_memo(move || {
+                    let m2 = m2.to_owned();
+                    match action.get_clone(){
+                        ActionOnUser::Delete => block_on(async move {
+                            request::<bool>(
+                                format!("api/v1/users/{}",m2.id().unwrap()),
+                                auth,
+                                Method::DELETE,
+                                None::<bool>,
+                                false
+                            )
+                            .await
+                            .unwrap();
+                            action.set_silent(ActionOnUser::None);
+                            refresh_users(m1, auth.clone()).await;
+                        }),
+                        _=>(),
                     }
-                }
-            },
-            None=>view!{},
-        })
+                });
+                view!{li(){UserCard(user=m, mode = mode.clone(), action=action)}}
+            }).collect::<Vec<View>>())
+        }
     }
 }

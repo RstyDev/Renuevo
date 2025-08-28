@@ -12,7 +12,7 @@ use web_sys::SubmitEvent;
 const NAME: &'static str = "Add User Form";
 
 #[component(inline_props)]
-pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
+pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Vec<Persona>>) -> View {
     let miembros2 = miembros.clone();
     // block_on(async move {
     //     refresh_users(miembros, auth.clone()).await;

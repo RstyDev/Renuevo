@@ -16,11 +16,12 @@ pub static HOST: LazyLock<String> = LazyLock::new(|| std::env!("BACKEND").to_str
 
 //const HOST: &str = "http://localhost:8088/";
 
-pub async fn refresh_users(miembros: Signal<Option<Vec<Persona>>>, auth: Signal<Auth>) {
+pub async fn refresh_users(miembros: Signal<Vec<Persona>>, auth: Signal<Auth>) {
     miembros.set(
         request::<Vec<Persona>>("api/v1/users/", auth, Method::GET, None::<bool>, true)
             .await
-            .unwrap(),
+            .unwrap()
+            .unwrap_or_default(),
     );
 }
 async fn fetch<T: DeserializeOwned>(
@@ -97,7 +98,8 @@ pub async fn request<T: DeserializeOwned>(
             .await
             {
                 Ok(res) => Ok(res),
-                Err(_) => {
+                Err(e) => {
+                    log(NAME,102,&e);
                     match fetch::<RefreshResult>(
                         &format!("{}/refresh_token", HOST.as_str()),
                         auth.refresh.clone(),

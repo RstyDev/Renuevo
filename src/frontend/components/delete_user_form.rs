@@ -5,7 +5,7 @@ use async_std::task::block_on;
 use sycamore::prelude::*;
 
 #[component(inline_props)]
-pub fn DeleteUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
+pub fn DeleteUserForm(auth: Signal<Auth>, miembros: Signal<Vec<Persona>>) -> View {
     let miembros2 = miembros.clone();
     block_on(async move {
         refresh_users(miembros, auth.clone()).await;

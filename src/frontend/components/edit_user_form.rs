@@ -1,9 +1,5 @@
 use crate::entities::{Estado, EstadoCivil, Persona, Sexo};
-use crate::frontend::components::{
-    StateForm,
-    ActionOnUser, Mode,
-    UserCards,
-};
+use crate::frontend::components::{ActionOnUser, Mode, StateForm, UserCards};
 use crate::frontend::{
     lib::{log, refresh_users, request},
     structs::Auth,
@@ -15,7 +11,7 @@ use sycamore::prelude::*;
 const NAME: &'static str = "Edit User Form";
 
 #[component(inline_props)]
-pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Option<Vec<Persona>>>) -> View {
+pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Vec<Persona>>) -> View {
     let form = create_signal(None::<Persona>);
     let action = create_signal(ActionOnUser::None);
     let act2 = action.clone();

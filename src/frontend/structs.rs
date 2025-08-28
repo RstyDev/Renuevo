@@ -22,4 +22,5 @@ pub enum Tabs {
     Miembros,
     Ministerio(Ministerio),
     Login,
+    PasswordChange,
 }

@@ -74,6 +74,12 @@ impl Persona {
         self.nacimiento
     }
 
+    pub fn set_apellido(&mut self, apellido: String) {
+        self.apellido = apellido
+    }
+    pub fn set_password(&mut self, password: Option<String>) {
+        self.password = password;
+    }
     pub fn set_estado_civil(&mut self, estado_civil: EstadoCivil) {
         self.estado_civil = estado_civil;
     }

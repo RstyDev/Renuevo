@@ -2,8 +2,7 @@ use crate::backend::infrastructure::db::establish_connection;
 use crate::backend::infrastructure::prefill::prefill;
 use crate::backend::infrastructure::repositories::SurrealFamilyRepository;
 use crate::backend::{
-    infrastructure::repositories::SurrealUserRepository,
-    presentation::routes::root_routes,
+    infrastructure::repositories::SurrealUserRepository, presentation::routes::root_routes,
 };
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
@@ -14,7 +13,7 @@ use std::env;
 use std::sync::Arc;
 
 pub async fn run() -> std::io::Result<()> {
-    println!("{:#?}", dotenv().ok());
+    dotenv().ok();
     let repo = SurrealUserRepository::new().await;
     let family_repo = SurrealFamilyRepository::new().await;
     if env::var("PREFILL").unwrap().eq_ignore_ascii_case("true") {

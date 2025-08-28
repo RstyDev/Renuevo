@@ -3,7 +3,8 @@ use crate::frontend::{
     components::Footer,
     lib::{log, request},
     pages::{
-        login::Login, miembros::Miembros, ministerio::Ministerio, quienes_somos::QuienesSomos,
+        change_password::ChangePassword, login::Login, miembros::Miembros, ministerio::Ministerio,
+        quienes_somos::QuienesSomos,
     },
     structs::{Auth, Tabs},
 };
@@ -16,6 +17,7 @@ pub fn MainPage(
     auth: Signal<Auth>,
     tab: Signal<Tabs>,
     resource: Signal<Option<Persona>>,
+    miembros: Signal<Vec<Persona>>,
     error_message: Signal<String>,
 ) -> View {
     let tab_selector = create_selector(move || tab.get_clone());
@@ -30,17 +32,37 @@ pub fn MainPage(
             r1.set(None)
         }
         Auth::Logged(login) => block_on(async move {
-            r1.set(
-                request::<Persona>(
-                    format!("api/v1/users/{}", login.id),
-                    auth,
-                    Method::GET,
-                    None::<bool>,
-                    true,
-                )
-                .await
-                .unwrap(),
-            )
+            let current_miembros =
+                request::<Vec<Persona>>("api/v1/users/", auth, Method::GET, None::<bool>, true)
+                    .await
+                    .unwrap();
+            match current_miembros
+                .as_ref()
+                .map(|vec| {
+                    vec.into_iter()
+                        .find(|user| login.id.eq(user.id().unwrap_or(&String::new())))
+                })
+                .flatten()
+            {
+                Some(user) => {
+                    log(NAME, 37, &user);
+                    log(NAME, 38, &current_miembros);
+                    r1.set(Some(user.clone()));
+                    miembros.set(current_miembros.unwrap_or_default());
+                }
+                None => auth.set(Auth::NotLogged),
+            }
+            // r1.set(
+            //     request::<Persona>(
+            //         format!("api/v1/users/{}", login.id),
+            //         auth,
+            //         Method::GET,
+            //         None::<bool>,
+            //         true,
+            //     )
+            //     .await
+            //     .unwrap(),
+            // )
         }),
     });
     // create_memo(move ||{
@@ -74,13 +96,16 @@ pub fn MainPage(
                 Tabs::Miembros => view!{
                     Miembros(auth = auth.clone())
                 },
-                Tabs::Ministerio(ministerio) => view!{Ministerio(auth = auth, ministerio = ministerio)},
+                Tabs::Ministerio(ministerio) => view!{Ministerio(auth = auth, miembros = miembros, ministerio = ministerio)},
                 Tabs::Login =>view!{
                     (match auth_selector.get_clone(){
                         Auth::NotLogged => view!{Login(logged= auth.clone(), error_message = error_message.clone())},
                         Auth::Logged(_) => view!{},
                     })
-                }
+                },
+                Tabs::PasswordChange => view!{
+                    ChangePassword(auth = auth,user = resource, error_message = error_message)
+                },
             })
             // (match resource_selector.get_clone() {
             //     Some(persona) => view!{

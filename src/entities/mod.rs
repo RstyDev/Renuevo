@@ -1,5 +1,6 @@
 mod login;
 
+pub mod dtos;
 mod objetos;
 mod personas;
 

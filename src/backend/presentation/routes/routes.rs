@@ -1,10 +1,8 @@
-use crate::backend::presentation::handlers::{
-    all_families, delete_family, family_by_id, register_family, update_family,
-};
-use crate::backend::presentation::handlers::{login, refresh_token, validator};
+use crate::backend::presentation::handlers::{all_families, change_password, delete_family, family_by_id, register_family, update_family};
 use crate::backend::presentation::handlers::{
     all_users, delete_user, register_user_handler, update_user, user_by_id,
 };
+use crate::backend::presentation::handlers::{login, refresh_token, validator};
 use actix_cors::Cors;
 use actix_web::web;
 use actix_web_httpauth::extractors::bearer::BearerAuth;
@@ -49,7 +47,8 @@ pub fn root_routes(config: &mut web::ServiceConfig) {
                 .service(all_users)
                 .service(user_by_id)
                 .service(delete_user)
-                .service(update_user),
+                .service(update_user)
+                .service(change_password),
         )
         .service(
             web::scope("/api/v1/families")

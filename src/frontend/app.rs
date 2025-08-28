@@ -25,6 +25,7 @@ pub fn App() -> View {
     let error_message = create_signal(String::new());
     let tab = create_signal(Tabs::Inicio);
     let persona = create_signal(None);
+    let miembros = create_signal(Vec::new());
     let cookie = html_document.cookie().unwrap();
     create_memo(move || match logged.get_clone() {
         Auth::NotLogged => {
@@ -90,7 +91,7 @@ pub fn App() -> View {
     view! {
         article(id="main"){
             Header(auth = logged.clone(),tabs = tab.clone(), hermano = persona.clone())
-            MainPage(auth = logged.clone(), tab = tab, resource = persona, error_message = error_message)
+            MainPage(auth = logged.clone(), tab = tab, resource = persona, miembros = miembros, error_message = error_message)
         }
     }
 }

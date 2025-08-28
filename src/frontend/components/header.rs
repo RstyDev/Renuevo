@@ -63,7 +63,7 @@ pub fn Header(auth: Signal<Auth>, tabs: Signal<Tabs>, hermano: Signal<Option<Per
                             }) {
                                 div(class="modal-content-user"){
                                     ul(id="dropdown_user"){
-                                        li(){a(){"Profile"}}
+                                        li(on:click = move |_| tabs.set(Tabs::PasswordChange)){a(){"Profile"}}
                                         li(on:click = move |_| {
                                             auth.set(Auth::NotLogged);
                                     }){a(){"Salir"}}
