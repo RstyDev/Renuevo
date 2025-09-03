@@ -7,6 +7,7 @@ use crate::{
     error::{AppError, AppRes},
 };
 use std::sync::Arc;
+use crate::entities::Libro;
 
 #[derive(Clone)]
 pub struct SurrealUserRepository {
@@ -42,7 +43,7 @@ impl UserRepository for Arc<SurrealUserRepository> {
             estado_civil: $hermano.estado_civil,
             estado: $hermano.estado,
             registrado: $hermano.registrado,
-
+            libros: $hermano.libros
         }
         "#,
             )
@@ -53,7 +54,7 @@ impl UserRepository for Arc<SurrealUserRepository> {
                 println!("{:#?}", a);
                 Ok(())
             }
-            Err(e) => Err(AppError::DBErr(41, e.to_string())),
+            Err(e) => Err(AppError::DBErr(56, e.to_string())),
         }
     }
 
@@ -67,11 +68,13 @@ impl UserRepository for Arc<SurrealUserRepository> {
 
     async fn get_all(&self) -> AppRes<Vec<Persona>> {
         match self.pool.select::<Vec<PersonaDB>>("personas").await {
-            Ok(res) => Ok(res
-                .into_iter()
-                .map(|persona| Persona::from_db(persona))
-                .collect::<Vec<Persona>>()),
-            Err(e) => Err(AppError::DBErr(75, e.to_string())),
+            Ok(res) => {
+                Ok(res
+                    .into_iter()
+                    .map(|persona| Persona::from_db(persona))
+                    .collect::<Vec<Persona>>())
+            },
+            Err(e) => Err(AppError::DBErr(76, e.to_string())),
         }
     }
 
@@ -187,5 +190,21 @@ impl UserRepository for Arc<SurrealUserRepository> {
         // {
         // }
 
+    }
+
+    async fn add_book(&self, id: &str, libro: Libro) -> AppRes<()> {
+        match self.pool.query(r#"
+            UPDATE ONLY type::thing($id) SET
+            libros += type::thing($libro);
+        "#).bind(("id",format!("personas:{}",id.to_owned()))).bind(("libro",format!("libros:{}",libro.id().unwrap()))).await{
+            Ok(res) => {
+                println!("{:#?}", res);
+                Ok(())
+            }
+            Err(e) => {
+                eprintln!("Error: {}",e.to_string());
+                Err(AppError::DBErr(201, e.to_string()))
+            },
+        }
     }
 }

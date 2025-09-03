@@ -3,8 +3,9 @@ use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
 
+
 #[cfg(feature = "ssr")]
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
 pub struct PersonaDB {
     id: Option<Thing>,
     password: String,
@@ -16,6 +17,7 @@ pub struct PersonaDB {
     estado: Estado,
     registrado: NaiveDate,
     familia: Option<Thing>,
+    libros: Vec<Thing>,
 }
 
 impl PersonaDB {
@@ -30,6 +32,7 @@ impl PersonaDB {
         estado: Estado,
         registrado: NaiveDate,
         familia: Option<Thing>,
+        libros: Vec<Thing>,
     ) -> Self {
         Self {
             id: id.map(|s| Thing::from(("personas", s.as_str()))),
@@ -42,6 +45,7 @@ impl PersonaDB {
             estado,
             registrado,
             familia,
+            libros
         }
     }
 
@@ -83,5 +87,8 @@ impl PersonaDB {
 
     pub fn familia(&self) -> &Option<Thing> {
         &self.familia
+    }
+    pub fn libros(&self) -> &Vec<Thing> {
+        &self.libros
     }
 }

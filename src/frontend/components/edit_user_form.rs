@@ -69,6 +69,7 @@ pub fn EditUserForm(auth: Signal<Auth>, miembros: Signal<Vec<Persona>>) -> View 
                         EstadoCivil::from_string(estado_civil.get_clone()).unwrap(),
                         estado,
                         persona.registrado().clone(),
+                        vec![]
                     );
                     log(NAME, 81, &user);
                     block_on(async move {

@@ -41,6 +41,7 @@ pub fn AddUserForm(auth: Signal<Auth>, miembros: Signal<Vec<Persona>>) -> View {
             EstadoCivil::from_string(estado_civil.get_clone()).unwrap(),
             Estado::Nuevo,
             Local::now().naive_local().date(),
+            vec![]
         );
         log(NAME, 16, &persona);
         block_on(async move {

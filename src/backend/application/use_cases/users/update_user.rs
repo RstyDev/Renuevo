@@ -3,6 +3,7 @@ use crate::{
     entities::Persona,
     error::AppRes,
 };
+use crate::entities::Libro;
 
 pub struct UpdateUserUseCase<T: UserRepository> {
     user_service: UserService<T>,
@@ -16,6 +17,9 @@ impl<T: UserRepository> UpdateUserUseCase<T> {
 
     pub async fn update(&self, persona: Persona) -> AppRes<Persona> {
         self.user_service.update(persona).await
+    }
+    pub async fn add_book(&self, id: &str, libro: Libro) -> AppRes<()> {
+        self.user_service.add_book(id,libro).await
     }
     pub async fn is_id_pass_correct(&self, id: &str, password: &str) -> AppRes<bool> {
         self.user_service.is_id_pass_correct(id,password).await

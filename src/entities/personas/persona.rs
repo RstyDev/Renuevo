@@ -1,10 +1,12 @@
 #[cfg(feature = "ssr")]
 use crate::backend::infrastructure::db::PersonaDB;
-use crate::entities::{Bautismo, Servicio};
+use crate::entities::{Bautismo, Libro, Servicio};
 // #[cfg(feature = "ssr")]
 use crate::error::{AppError, AppRes};
 use chrono::{Months, NaiveDate};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "ssr")]
+use surrealdb::sql::Thing;
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
 pub struct Persona {
@@ -17,6 +19,7 @@ pub struct Persona {
     estado_civil: EstadoCivil,
     estado: Estado,
     registrado: NaiveDate,
+    libros: Vec<Libro>
 }
 
 impl Persona {
@@ -30,6 +33,7 @@ impl Persona {
         estado_civil: EstadoCivil,
         estado: Estado,
         registrado: NaiveDate,
+        libros: Vec<Libro>
     ) -> Self {
         Self {
             id,
@@ -41,6 +45,7 @@ impl Persona {
             estado_civil,
             estado,
             registrado,
+            libros,
         }
     }
     pub fn id(&self) -> Option<&String> {
@@ -98,6 +103,18 @@ impl Persona {
                 .unwrap()
     }
 
+    pub fn add_libro(&mut self, libro: Libro) {
+        self.libros.push(libro);
+    }
+
+    pub fn remove_libro(&mut self, id: &str) {
+        for i in 0..self.libros.len() {
+            if self.libros[i].id().map(|local_id|local_id.eq(id)).unwrap_or(false) {
+                self.libros.remove(i);
+            }
+        }
+    }
+
     #[cfg(feature = "ssr")]
     pub fn to_db_no_pass(self) -> PersonaDB {
         PersonaDB::new(
@@ -111,6 +128,7 @@ impl Persona {
             self.estado,
             self.registrado,
             None,
+            self.libros.iter().filter_map(|l|l.id().map(|id|Thing::from(("libros",id)))).collect()
         )
     }
     #[cfg(feature = "ssr")]
@@ -131,6 +149,7 @@ impl Persona {
                 self.estado,
                 self.registrado,
                 None,
+                self.libros.iter().filter_map(|l|l.id().map(|id|Thing::from(("libros",id)))).collect()
             )),
         }
     }
@@ -146,6 +165,7 @@ impl Persona {
             estado_civil: persona.estado_civil().clone(),
             estado: persona.estado().clone(),
             registrado: persona.registrado(),
+            libros: vec![]
         }
     }
 
@@ -161,6 +181,7 @@ impl Persona {
             estado_civil: persona.estado_civil().clone(),
             estado: persona.estado().clone(),
             registrado: persona.registrado(),
+            libros: vec![]
         }
     }
 }

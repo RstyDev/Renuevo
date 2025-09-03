@@ -132,7 +132,7 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
 
                 Ok(())
             }
-            Err(e) => Err(AppError::DBErr(41, e.to_string())),
+            Err(e) => Err(AppError::DBErr(135, e.to_string())),
         }
     }
 

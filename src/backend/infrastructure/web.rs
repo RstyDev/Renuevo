@@ -1,6 +1,6 @@
 use crate::backend::infrastructure::db::establish_connection;
 use crate::backend::infrastructure::prefill::prefill;
-use crate::backend::infrastructure::repositories::SurrealFamilyRepository;
+use crate::backend::infrastructure::repositories::{SurrealBookRepository, SurrealFamilyRepository};
 use crate::backend::{
     infrastructure::repositories::SurrealUserRepository, presentation::routes::root_routes,
 };
@@ -16,11 +16,26 @@ pub async fn run() -> std::io::Result<()> {
     dotenv().ok();
     let repo = SurrealUserRepository::new().await;
     let family_repo = SurrealFamilyRepository::new().await;
+    let book_repo = SurrealBookRepository::new().await;
+    let db = establish_connection().await;
     if env::var("PREFILL").unwrap().eq_ignore_ascii_case("true") {
-        prefill(Arc::from(repo.clone())).await;
+        prefill(Arc::from(repo.clone()), Arc::from(book_repo.clone()), Arc::from(family_repo.clone())).await;
+        if let Ok(church_name) = env::var("CHURCH_NAME") {
+            let denomination = env::var("DENOMINATION").unwrap();
+            let presbytery = env::var("PRESBYTERY").unwrap();
+            db.query(r#"
+                INSERT INTO iglesia {
+                    nombre: $church_name,
+                    denominacion: $denomination,
+                    presbiterio: $presbytery
+                }"#)
+                .bind(("church_name",church_name))
+                .bind(("denomination",denomination))
+                .bind(("presbytery",presbytery)).await.unwrap();
+
+        }
     }
     let app_data = Data::new(repo);
-    let db = establish_connection().await;
     println!("Starting...");
 
     let app = HttpServer::new(move || {
@@ -37,6 +52,7 @@ pub async fn run() -> std::io::Result<()> {
         App::new()
             .app_data(app_data.to_owned())
             .app_data(Data::new(family_repo.to_owned()))
+            .app_data(Data::new(book_repo.to_owned()))
             .app_data(Data::new(db.to_owned()))
             .wrap(Logger::default())
             .wrap(cors)

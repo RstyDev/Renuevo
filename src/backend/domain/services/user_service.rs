@@ -1,4 +1,5 @@
 use crate::{backend::domain::repositories::UserRepository, entities::Persona, error::AppRes};
+use crate::entities::Libro;
 
 #[derive(Clone)]
 pub struct UserService<T: UserRepository> {
@@ -33,5 +34,8 @@ impl<T: UserRepository> UserService<T> {
     }
     pub async fn update_password(&self, id: &str, password: &str) -> AppRes<()>{
         self.user_repo.update_password(id, password).await
+    }
+    pub async fn add_book(&self, id: &str, libro: Libro) -> AppRes<()>{
+        self.user_repo.add_book(id, libro).await
     }
 }
