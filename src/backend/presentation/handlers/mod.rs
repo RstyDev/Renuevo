@@ -1,7 +1,9 @@
 mod family_handlers;
 mod root_handlers;
 mod user_handler;
+mod book_handlers;
 
 pub use family_handlers::*;
 pub use root_handlers::*;
 pub use user_handler::*;
+pub use book_handlers::*;

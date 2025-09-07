@@ -6,8 +6,8 @@ use crate::{
     error::{AppError, AppRes},
 };
 use std::sync::Arc;
-use crate::backend::infrastructure::db::{LibroDB, UbicacionDB};
-use crate::entities::{Libro, Ubicacion};
+use crate::backend::infrastructure::db::LibroDB;
+use crate::entities::Libro;
 
 #[derive(Clone)]
 pub struct SurrealBookRepository {
@@ -32,11 +32,10 @@ impl BookRepository for Arc<SurrealBookRepository> {
     pub_year: u16,
     edicion: u8,
     paginas: u16,
-    ubicacion: Option<Thing>,
+
     */
     async fn save(&self, book: Libro) -> AppRes<()> {
         println!("Saving Book");
-        let ubicacion = book.ubicacion().clone();
         let res = self.pool.query(r#"
         insert into libros {
             titulo: $libro.titulo,
@@ -46,13 +45,9 @@ impl BookRepository for Arc<SurrealBookRepository> {
             pub_year: $libro.pub_year,
             edicion: $libro.edicion,
             paginas: $libro.paginas,
-            ubicacion: $ubicacion
+            prestamo: $libro.prestamo
         }
-        "#).bind(("libro",book)).bind(("ubicacion",match ubicacion{
-            Ubicacion::None => {UbicacionDB::None}
-            Ubicacion::Usuario(u) => UbicacionDB::Usuario(u.to_db_no_pass()),
-            Ubicacion::Iglesia(i) => UbicacionDB::Iglesia(i.to_db())
-        })).await;
+        "#).bind(("libro",book.to_db())).await;
         match res {
             Ok(a) => {
                 println!("{:#?}", a);

@@ -266,7 +266,7 @@ pub fn RelateUsersForm(auth: Signal<Auth>, miembros: Signal<Vec<Persona>>) -> Vi
             button(on:click=move|_|{
                 block_on(async move {
                     let familia = request::<Familia>(
-                        format!("api/v1/families/{}", padre_id.get_clone()),
+                        "api/v1/families",
                         auth.clone(),
                         Method::PUT,
                         familia_actual.get_clone(),

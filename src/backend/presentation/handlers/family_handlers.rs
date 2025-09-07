@@ -70,15 +70,14 @@ pub async fn delete_family(
         }
     }
 }
-#[put("/{id}")]
+#[put("/")]
 pub async fn update_family(
     repo: Data<SurrealFamilyRepository>,
     input: Json<Familia>,
-    id: Path<String>,
 ) -> impl Responder {
     let repo = repo.into_inner();
     match UpdateFamilyUseCase::new(repo.clone())
-        .update(input.into_inner(), id.into_inner())
+        .update(input.into_inner())
         .await
     {
         Ok(family) => {

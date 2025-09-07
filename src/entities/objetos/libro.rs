@@ -1,8 +1,10 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use surrealdb::sql::Thing;
 #[cfg(feature = "ssr")]
-use crate::backend::infrastructure::db::{LibroDB, UbicacionDB};
+use crate::backend::infrastructure::db::LibroDB;
+use crate::backend::infrastructure::db::PrestamoLibroDB;
 use crate::entities::objetos::iglesia::Iglesia;
 use crate::entities::Persona;
 
@@ -16,7 +18,7 @@ pub struct Libro {
     pub_year: u16,
     edicion: u16,
     paginas: u16,
-    ubicacion: Ubicacion,
+    prestamo: PrestamoLibro
 }
 
 impl Libro {
@@ -29,7 +31,7 @@ impl Libro {
         pub_year: u16,
         edicion: u16,
         paginas: u16,
-        ubicacion: Ubicacion,
+        prestamo: PrestamoLibro
     ) -> Self {
         Self {
             id,
@@ -40,7 +42,7 @@ impl Libro {
             pub_year,
             edicion,
             paginas,
-            ubicacion,
+            prestamo
         }
     }
     pub fn id(&self) -> Option<&str> {
@@ -78,9 +80,7 @@ impl Libro {
         self.paginas
     }
 
-    pub fn ubicacion(&self) -> &Ubicacion {
-        &self.ubicacion
-    }
+
 
     pub fn set_titulo(&mut self, titulo: String) {
         self.titulo = titulo;
@@ -110,9 +110,6 @@ impl Libro {
         self.paginas = paginas;
     }
 
-    pub fn set_ubicacion(&mut self, ubicacion: Ubicacion) {
-        self.ubicacion = ubicacion;
-    }
     #[cfg(feature = "ssr")]
     pub fn from_db(libro: LibroDB) -> Self {
         Self{
@@ -124,38 +121,40 @@ impl Libro {
             pub_year: libro.pub_year(),
             edicion: libro.edicion(),
             paginas: libro.paginas(),
-            ubicacion: Ubicacion::from_db(libro.ubicacion().to_owned()),
+            prestamo: PrestamoLibro::from_db(libro.prestamo().to_owned())
         }
     }
     #[cfg(feature = "ssr")]
     pub fn to_db(self) -> LibroDB {
-        LibroDB::new(self.id.map(|id|Thing::from(("libros", id.as_str()))),self.titulo,self.autor,self.isbn,self.editorial,self.pub_year,self.edicion,self.paginas,self.ubicacion.to_db())
+        LibroDB::new(self.id.map(|id|Thing::from(("libros", id.as_str()))),self.titulo,self.autor,self.isbn,self.editorial,self.pub_year,self.edicion,self.paginas,self.prestamo.to_db())
     }
 }
+
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
-pub enum Ubicacion {
+pub enum PrestamoLibro {
     #[default]
     None,
-    Usuario(Persona),
-    Iglesia(Iglesia)
+    Usuario{
+        id: String,
+        dias: u16,
+        fecha: NaiveDate,
+    }
 }
 
-#[cfg(feature = "ssr")]
-impl Ubicacion {
-    pub fn to_db(self) -> UbicacionDB {
-        match self {
-            Ubicacion::None => UbicacionDB::None,
-            Ubicacion::Usuario(u) => UbicacionDB::Usuario(u.to_db_no_pass()),
-            Ubicacion::Iglesia(i) => UbicacionDB::Iglesia(i.to_db())
+impl PrestamoLibro {
+    #[cfg(feature = "ssr")]
+    pub fn to_db(self) -> PrestamoLibroDB {
+        match self{
+            PrestamoLibro::None => {PrestamoLibroDB::None}
+            PrestamoLibro::Usuario { fecha, id, dias } => {PrestamoLibroDB::Usuario {fecha,dias, id: Thing::from(("personas", id.as_str()))}}
         }
     }
-
-    pub fn from_db(ubicacion: UbicacionDB) -> Self{
-        match ubicacion {
-            UbicacionDB::None => Ubicacion::None,
-            UbicacionDB::Iglesia(i) => Ubicacion::Iglesia(Iglesia::from_db(i)),
-            UbicacionDB::Usuario(u) => Ubicacion::Usuario(Persona::from_db(u)),
+    #[cfg(feature = "ssr")]
+    pub fn from_db(prestamo: PrestamoLibroDB) -> Self {
+        match prestamo{
+            PrestamoLibroDB::None => PrestamoLibro::None,
+            PrestamoLibroDB::Usuario { fecha,id, dias } => {PrestamoLibro::Usuario {fecha,dias,id:id.id.to_string()}}
         }
     }
 }

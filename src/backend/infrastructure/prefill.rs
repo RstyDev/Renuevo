@@ -1,11 +1,12 @@
 use std::env;
 use crate::backend::application::use_cases::{GetAllBooksUseCase, GetAllUsersUseCase, RegisterFamilyUseCase, RegisterUserUseCase, SaveBookUseCase, UpdateUserUseCase};
 use crate::backend::infrastructure::repositories::{SurrealBookRepository, SurrealFamilyRepository, SurrealUserRepository};
-use crate::entities::{Bautismo, Estado, EstadoCivil, Familia, Libro, Ministerio, Persona, Servicio, Sexo, TipoPresbitero, Ubicacion};
+use crate::entities::{Bautismo, Estado, EstadoCivil, Familia, Libro, Ministerio, Persona, PrestamoLibro, Servicio, Sexo, TipoPresbitero};
 use chrono::Local;
 use std::sync::Arc;
 
 pub async fn prefill(repo: Arc<SurrealUserRepository>, book_repo: Arc<SurrealBookRepository>, family_repo: Arc<SurrealFamilyRepository>) {
+
     let mut personas = vec![];
     personas.push(Persona::new(
         None,
@@ -154,8 +155,10 @@ pub async fn prefill(repo: Arc<SurrealUserRepository>, book_repo: Arc<SurrealBoo
     let familia = Familia::new(None,String::from("Igarzabal Cortés"),Some(lucas.clone()),Some(majo),vec![]);
     let family_use = RegisterFamilyUseCase::new(family_repo);
     family_use.execute(familia).await.unwrap();
-    let libro = Libro::new(None,String::from("Conocer a Dios"),String::from("J.I. Packer"),String::from("978-1-955182-01-0"),String::from("Poiema"),1890,2023,355,Ubicacion::Usuario(lucas.clone()));
+    let libro = Libro::new(None,String::from("Conocer a Dios"),String::from("J.I. Packer"),String::from("978-1-955182-01-0"),String::from("Poiema"),1890,2023,355,PrestamoLibro::Usuario {id:lucas.id().unwrap().to_string(),dias:10,fecha:Local::now().date_naive()});
+    let libro2 = Libro::new(None, String::from("Asombrados Por Dios"),String::from("John Piper"),String::from("978-1-5359-5716-8"),String::from("B&H Publishing Group"),2018,2019,165,PrestamoLibro::None);
     book_use.execute(libro.clone()).await.unwrap();
+    book_use.execute(libro2).await.unwrap();
     lucas.set_password(Some(String::from("121212")));
     // lucas.add_libro(libro);
     let libros = GetAllBooksUseCase::new(book_repo).get_all().await.unwrap();

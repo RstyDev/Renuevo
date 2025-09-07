@@ -1,3 +1,5 @@
+#[cfg(feature = "ssr")]
+use actix_web::HttpResponse;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -18,4 +20,30 @@ pub enum AppError {
     ValidationErr(u16, String),
     #[error("HTTP error: {1} \nLine{0}")]
     HttpErr(u16, String),
+}
+
+#[cfg(feature = "ssr")]
+impl AppError{
+    pub fn to_response(self) -> HttpResponse {
+        match self{
+            AppError::IndexErr(e) => {
+                HttpResponse::InternalServerError().json(e)
+            }
+            AppError::DBErr(line, e) => {
+                HttpResponse::InternalServerError().json((line,e))
+            }
+            AppError::UnknownState(line, e) => {
+                HttpResponse::InternalServerError().json((line,e))
+            }
+            AppError::NotFound(e) => {
+                HttpResponse::NotFound().json(e)
+            }
+            AppError::ValidationErr(line, e) => {
+                HttpResponse::InternalServerError().json((line,e))
+            }
+            AppError::HttpErr(line, e) => {
+                HttpResponse::InternalServerError().json((line,e))
+            }
+        }
+    }
 }

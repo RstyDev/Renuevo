@@ -13,7 +13,6 @@ use actix_web::{
     web::{Data, Json, Path},
     HttpResponse, Responder,
 };
-use crate::error::AppError;
 
 #[get("/")]
 pub async fn all_users(repo: Data<SurrealUserRepository>) -> impl Responder {
@@ -21,7 +20,7 @@ pub async fn all_users(repo: Data<SurrealUserRepository>) -> impl Responder {
         Ok(res) => HttpResponse::Ok().json(res),
         Err(e) => {
             eprintln!("Error getting all users: {:#?}", e);
-            HttpResponse::InternalServerError().json(e.to_string())
+            e.to_response()
         }
     }
 }
@@ -37,7 +36,7 @@ pub async fn user_by_id(repo: Data<SurrealUserRepository>, id: Path<String>) -> 
         },
         Err(e) => {
             eprintln!("Error finding user {:#?}", e);
-            HttpResponse::InternalServerError().json(e)
+            e.to_response()
         }
     }
 }
@@ -51,7 +50,7 @@ pub async fn delete_user(repo: Data<SurrealUserRepository>, id: Path<String>) ->
         Ok(_) => HttpResponse::NoContent().finish(),
         Err(e) => {
             eprintln!("Error while deleting user: {:?}", e);
-            HttpResponse::InternalServerError().json(e)
+            e.to_response()
         }
     }
 }
@@ -84,19 +83,13 @@ pub async fn change_password(
                     }
                     Err(e) => {
                         println!("Error while updating user: {:#?}", e);
-                        HttpResponse::InternalServerError().json(e)
+                        e.to_response()
                     }
                 }
             }
             false => HttpResponse::NotFound().finish(),
         },
-        Err(e) => {
-            match e {
-                AppError::ValidationErr(_,e) => HttpResponse::BadRequest().json(e),
-                AppError::NotFound(_) => HttpResponse::NotFound().finish(),
-                _ => HttpResponse::InternalServerError().finish(),
-            }
-        },
+        Err(e) => e.to_response(),
     }
 }
 #[put("/{id}")]
@@ -128,13 +121,13 @@ pub async fn update_user(
                     }
                     Err(e) => {
                         println!("Error while updating user: {:#?}", e);
-                        HttpResponse::InternalServerError().json(e)
+                        e.to_response()
                     }
                 }
             }
             None => HttpResponse::NotFound().finish(),
         },
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => e.to_response(),
     }
 }
 #[post("/")]
@@ -149,7 +142,7 @@ pub async fn register_user_handler(
         Ok(_) => HttpResponse::NoContent().finish(),
         Err(e) => {
             eprintln!("Error registering user: {:?}", e);
-            HttpResponse::InternalServerError().body("Please try again")
+            e.to_response()
         }
     }
 }

@@ -19,6 +19,12 @@ pub async fn run() -> std::io::Result<()> {
     let book_repo = SurrealBookRepository::new().await;
     let db = establish_connection().await;
     if env::var("PREFILL").unwrap().eq_ignore_ascii_case("true") {
+        db.query(r#"
+            remove table if exists personas;
+            remove table if exists libros;
+            remove table if exists iglesia;
+            remove table if exists familias;
+        "#).await.unwrap();
         prefill(Arc::from(repo.clone()), Arc::from(book_repo.clone()), Arc::from(family_repo.clone())).await;
         if let Ok(church_name) = env::var("CHURCH_NAME") {
             let denomination = env::var("DENOMINATION").unwrap();

@@ -1,6 +1,7 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
-use crate::backend::infrastructure::db::{IglesiaDB, PersonaDB};
+
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
 pub struct LibroDB {
@@ -12,7 +13,7 @@ pub struct LibroDB {
     pub_year: u16,
     edicion: u16,
     paginas: u16,
-    ubicacion: UbicacionDB,
+    prestamo: PrestamoLibroDB
 }
 
 impl LibroDB {
@@ -49,18 +50,22 @@ impl LibroDB {
         self.paginas
     }
 
-    pub fn ubicacion(&self) -> &UbicacionDB {
-        &self.ubicacion
+    pub fn new(id: Option<Thing>, titulo: String, autor: String, isbn: String, editorial: String, pub_year: u16, edicion: u16, paginas: u16, prestamo: PrestamoLibroDB) -> Self {
+        Self { id, titulo, autor, isbn, editorial, pub_year, edicion, paginas, prestamo }
     }
 
-    pub fn new(id: Option<Thing>, titulo: String, autor: String, isbn: String, editorial: String, pub_year: u16, edicion: u16, paginas: u16, ubicacion: UbicacionDB) -> Self {
-        Self { id, titulo, autor, isbn, editorial, pub_year, edicion, paginas, ubicacion }
+    pub fn prestamo(&self) -> &PrestamoLibroDB {
+        &self.prestamo
     }
 }
+
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
-pub enum UbicacionDB{
+pub enum PrestamoLibroDB {
     #[default]
     None,
-    Iglesia(IglesiaDB),
-    Usuario(PersonaDB)
+    Usuario{
+        id: Thing,
+        dias: u16,
+        fecha: NaiveDate,
+    }
 }

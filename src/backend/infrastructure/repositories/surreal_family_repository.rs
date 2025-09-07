@@ -190,7 +190,7 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
                                                  // }
     }
 
-    async fn update(&self, familia: Familia, id: String) -> AppRes<()> {
+    async fn update(&self, familia: Familia) -> AppRes<()> {
         let mut res = self
             .pool
             .query(
@@ -198,7 +198,7 @@ impl FamilyRepository for Arc<SurrealFamilyRepository> {
             SELECT VALUE id FROM ONLY type::thing($familia);
         "#,
             )
-            .bind(("familia", format!("familias:{}", id)))
+            .bind(("familia", format!("familias:{}", familia.id().as_ref().unwrap())))
             .await
             .map_err(|e| AppError::DBErr(203, e.to_string()))?;
         if res
