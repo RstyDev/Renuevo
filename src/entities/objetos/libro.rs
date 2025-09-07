@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
 #[cfg(feature = "ssr")]
 use crate::backend::infrastructure::db::LibroDB;
+#[cfg(feature = "ssr")]
 use crate::backend::infrastructure::db::PrestamoLibroDB;
 use crate::entities::objetos::iglesia::Iglesia;
 use crate::entities::Persona;
